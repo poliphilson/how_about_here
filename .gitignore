@@ -1,0 +1,15 @@
+/ios
+/linux
+/macos
+/web
+/windows
+/android
+.DS_Store
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.idea/
+.vscode/
+build/
+here.iml
+pubspec.lock
