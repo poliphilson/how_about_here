@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:here/commons/animation/top_to_bottom.dart';
 import 'package:here/commons/provider/control_marker.dart';
@@ -40,6 +41,35 @@ class _MyHomeState extends State<MyHome> {
           zoom: 15,
         ),
       ),
+      floatingActionButton: _floatingActionButton(),
+    );
+  }
+
+  SpeedDial _floatingActionButton() {
+    return SpeedDial(
+      animatedIcon: AnimatedIcons.menu_close,
+      foregroundColor: Colors.black,
+      backgroundColor: Colors.white,
+      spacing: 5,
+      overlayOpacity: 0,
+      children: [
+        SpeedDialChild(
+          child: const Icon(Icons.calendar_month_outlined),
+          label: 'Calendar'
+        ),
+        SpeedDialChild(
+          child: const Icon(Icons.location_on_outlined),
+          label: 'My location'
+        ),
+        SpeedDialChild(
+          child: const Icon(Icons.add_location_alt_outlined),
+          label: 'Add check point'
+        ),
+        SpeedDialChild(
+          child: const Icon(Icons.create_outlined),
+          label: 'Write'
+        ),
+      ],
     );
   }
 
