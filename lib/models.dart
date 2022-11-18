@@ -41,3 +41,13 @@ class Here {
     isPrivated = json['is_privated'];
   } 
 }
+
+class User {
+  late String email;
+  late String profileImage;
+
+  User.fromJson(Map json) {
+    email = json['email'];
+    profileImage = json['profile_image'];
+  }
+}
