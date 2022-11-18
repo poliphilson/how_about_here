@@ -7,10 +7,11 @@ class ControlMarker extends ChangeNotifier {
 
   List<Marker> get markers => _markers;
 
-  void add(Here here) {
+  void add(Here here, double color) {
     _markers.add(Marker(
       markerId: MarkerId(here.hid.toString()),
       position: LatLng(here.location['x'], here.location['y']),
+      icon: BitmapDescriptor.defaultMarkerWithHue(color)
     ));
     notifyListeners();
   }
