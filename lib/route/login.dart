@@ -241,7 +241,7 @@ class _LoginState extends State<Login> {
   Future<void> _goToMyHome(BuildContext context, List<Map<String, dynamic>> heres) async {
     Navigator.pop(context);
     if (widget.main) {
-      Navigator.pushReplacement(context, scale(MyHome(heres: heres)));
+      Navigator.pushReplacement(context, scale(MyHome(heres: heres), true));
     }
   }
 }

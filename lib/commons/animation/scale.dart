@@ -1,7 +1,8 @@
 import 'package:flutter/widgets.dart';
 
-Route scale(Widget page) {
+Route scale(Widget page, bool opaque) {
   return PageRouteBuilder(
+    opaque: opaque,
     pageBuilder: (context, animation, secondaryAnimation) {
       return page;
     },

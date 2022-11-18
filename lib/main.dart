@@ -94,7 +94,7 @@ class _MainState extends State<Main> {
                             .toList();
                       SchedulerBinding.instance.addPostFrameCallback((_) {
                         Navigator.pushReplacement(
-                            context, scale(MyHome(heres: heres)));
+                            context, scale(MyHome(heres: heres), true));
                       });
                       return Container();
                     }
