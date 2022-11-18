@@ -47,7 +47,7 @@ class Main extends StatefulWidget {
 
 class _MainState extends State<Main> {
   final _storage = const FlutterSecureStorage();
-  final RequsetApiForm requsetApiForm = RequsetApiForm();
+  final RequsetApiForm requestApiForm = RequsetApiForm();
 
   @override
   Widget build(BuildContext context) {
@@ -69,11 +69,11 @@ class _MainState extends State<Main> {
             } else {
               final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
               final String today = dateFormat.format(DateTime.now());
-              requsetApiForm.method = 'GET';
-              requsetApiForm.headers = {"Cookie": snapshot.data!.accessToken};
-              requsetApiForm.url = 'http://localhost:8080/here?date=$today';
+              requestApiForm.method = 'GET';
+              requestApiForm.headers = {"Cookie": snapshot.data!.accessToken};
+              requestApiForm.url = 'http://localhost:8080/here?date=$today';
               return FutureBuilder<HereJsonForm>(
-                future: requestApi(requsetApiForm),
+                future: requestApi(requestApiForm),
                 builder: (_, snapshot) {
                   if (snapshot.hasData == false) {
                     return const Center(
