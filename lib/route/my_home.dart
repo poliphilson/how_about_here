@@ -4,6 +4,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:here/commons/animation/scale.dart';
 import 'package:here/commons/animation/top_to_bottom.dart';
 import 'package:here/commons/function/get_access_token.dart';
 import 'package:here/commons/function/get_refresh_token.dart';
@@ -14,6 +15,7 @@ import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/constant.dart';
 import 'package:here/models.dart';
 import 'package:here/route/login.dart';
+import 'package:here/route/write.dart';
 import 'package:provider/provider.dart';
 
 class MyHome extends StatefulWidget {
@@ -34,7 +36,7 @@ class _MyHomeState extends State<MyHome> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       for (int i = 0; i < widget.heres.length; i++) {
         here = Here.fromJson(widget.heres[i]);
-        Provider.of<ControlMarker>(context, listen: false).add(here);
+        Provider.of<ControlMarker>(context, listen: false).add(here, BitmapDescriptor.hueRed);
       }
     });
 
@@ -56,13 +58,13 @@ class _MyHomeState extends State<MyHome> {
             ),
           ),
           Positioned(
-            top: 50,
-            left: 20,
+            top: 60,
+            left: 30,
             child: _userFloatingActionButton(),
           ),
           Positioned(
-            bottom: 50,
-            right: 20,
+            bottom: 60,
+            right: 30,
             child: _menuFloatingActionButton(),
           ),
         ],
@@ -164,7 +166,6 @@ class _MyHomeState extends State<MyHome> {
           child: const Icon(Icons.my_location_outlined),
           label: 'My location',
           onTap: () {
-            
           },
         ),
         SpeedDialChild(
@@ -178,6 +179,9 @@ class _MyHomeState extends State<MyHome> {
         SpeedDialChild(
           child: const Icon(Icons.edit_location_outlined),
           label: 'Write',
+          onTap: () {
+            Navigator.push(context, scale(const Write(), false));
+          },
         ),
       ],
     );
