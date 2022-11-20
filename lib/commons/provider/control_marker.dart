@@ -21,7 +21,26 @@ class ControlMarker extends ChangeNotifier {
     notifyListeners();
   }
 
+  void myLocation(double latitude, double longitude) async {
+    _markers.add(Marker(
+      markerId: const MarkerId('my_location'),
+      position: LatLng(latitude, longitude),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
+    ));
+    notifyListeners();
+
+    await Future.delayed(const Duration(seconds: 3));
+    
+    _markers.removeWhere((marker) => marker.markerId == const MarkerId('my_location'));
+    notifyListeners();
+  }
+
   void edit() {
+    notifyListeners();
+  }
+
+  void clear() {
+    _markers.clear();
     notifyListeners();
   }
 }
