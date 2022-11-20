@@ -1,13 +1,20 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:here/commons/function/get_access_token.dart';
 import 'package:here/commons/function/get_address_from_location.dart';
 import 'package:here/commons/function/get_my_location.dart';
+import 'package:here/commons/function/request_api.dart';
+import 'package:here/commons/provider/control_marker.dart';
 import 'package:here/commons/provider/progress_indicator_status.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/commons/widget/new_route_base.dart';
+import 'package:here/constant.dart';
+import 'package:here/models.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -19,8 +26,8 @@ class Write extends StatefulWidget {
 }
 
 class _WriteState extends State<Write> {
-  final TextEditingController _contentsTextEditController =
-      TextEditingController();
+  final _storage = const FlutterSecureStorage();
+  final TextEditingController _contentsTextEditController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   late final Position position;
   late final Placemark placemark;
@@ -95,8 +102,28 @@ class _WriteState extends State<Write> {
                                 ),
                                 onPressed: () async {
                                   progressIndicator.on();
-                                  await Future.delayed(Duration(seconds: 3));
-                                  progressIndicator.off();
+
+                                  AccessToken aToken = await getAccessToken(_storage);
+
+                                  final SendHereForm sendHereForm = SendHereForm();
+                                  sendHereForm.contents = _contentsTextEditController.text;
+                                  sendHereForm.isPrivated = private;
+                                  sendHereForm.x = position.latitude;
+                                  sendHereForm.y = position.longitude;
+                                  sendHereForm.images = images;
+
+                                  HereJsonForm hereJsonForm =  await sendHere(sendHereForm, aToken.accessToken);
+                                  if (hereJsonForm.hereCode == statusOK) {
+                                    Here here = Here.fromJson(hereJsonForm.data);
+
+                                    if (!mounted) return;
+                                    Provider.of<ControlMarker>(context, listen: false).add(here, BitmapDescriptor.hueRed);
+                                    progressIndicator.off();
+                                    Navigator.pop(context);
+                                  } else {
+                                    print('Fail to send here');
+                                    progressIndicator.off();
+                                  }
                                 },
                               ),
                       ),
