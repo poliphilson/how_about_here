@@ -1,3 +1,5 @@
+import 'package:image_picker/image_picker.dart';
+
 class HereJsonForm {
   late int hereCode;
   late int httpCode;
@@ -12,6 +14,14 @@ class RequsetApiForm {
   late String url;
   String? query;
   Map<String, dynamic>? body;
+}
+
+class SendHereForm {
+  late String contents;
+  late bool isPrivated;
+  late double x;
+  late double y;
+  late List<XFile?> images = [];
 }
 
 class AccessToken {
@@ -39,7 +49,7 @@ class Here {
     image = json['image'];
     video = json['video'];
     isPrivated = json['is_privated'];
-  } 
+  }
 }
 
 class User {
