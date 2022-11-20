@@ -7,6 +7,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:here/commons/function/get_access_token.dart';
 import 'package:here/commons/function/get_address_from_location.dart';
+import 'package:here/commons/function/get_area.dart';
+import 'package:here/commons/function/get_locality.dart';
 import 'package:here/commons/function/get_my_location.dart';
 import 'package:here/commons/function/request_api.dart';
 import 'package:here/commons/provider/control_marker.dart';
@@ -48,11 +50,11 @@ class _WriteState extends State<Write> {
 
   _getMyCurrentAddress() async {
     position = await getMyLocation();
-    placemark =
-        await getAddressFromLocation(position.latitude, position.longitude);
+    placemark = await getAddressFromLocation(position.latitude, position.longitude);
     setState(() {
-      area = placemark.administrativeArea!;
-      locality = '${placemark.street!}, ${placemark.locality!}';
+      // Name > Subthoroughfare > Street > Sublocality > Locality > Administrative area > Country
+      area = getArea(placemark);
+      locality = getLocality(placemark);
     });
   }
 
