@@ -174,28 +174,34 @@ class _LoginState extends State<Login> {
                                                         await _storage.write(key: refreshToken,value: tokens[i],);
                                                       }
                                                     }
+
+                                                    if (widget.main) {
+                                                      RequsetApiForm getHeresApiForm = RequsetApiForm();
+                                                      final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+                                                      final String today = dateFormat.format(DateTime.now());
+                                                      AccessToken aToken = await getAccessToken(_storage);
+                                                      getHeresApiForm.method = 'GET';
+                                                      getHeresApiForm.url = 'http://localhost:8080/here?date=$today';
+                                                      getHeresApiForm.headers = {
+                                                        "Cookie": aToken.accessToken
+                                                      };
     
-                                                    RequsetApiForm getHeresApiForm = RequsetApiForm();
-                                                    final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
-                                                    final String today = dateFormat.format(DateTime.now());
-                                                    AccessToken aToken = await getAccessToken(_storage);
-                                                    getHeresApiForm.method = 'GET';
-                                                    getHeresApiForm.url = 'http://localhost:8080/here?date=$today';
-                                                    getHeresApiForm.headers = {
-                                                      "Cookie": aToken.accessToken
-                                                    };
+                                                      HereJsonForm getHeresJsonForm = await requestApi(getHeresApiForm);
+                                                      getHeresJsonForm.data ??= [];
+                                                      List<Map<String, dynamic>> heres;
+                                                      heres = (getHeresJsonForm.data as List)
+                                                              .map((item) => item as Map<String, dynamic>)
+                                                              .toList();
+                                                      progressIndicator.off();
     
-                                                    HereJsonForm getHeresJsonForm = await requestApi(getHeresApiForm);
-                                                    getHeresJsonForm.data ??= [];
-                                                    List<Map<String, dynamic>> heres;
-                                                    heres = (getHeresJsonForm.data as List)
-                                                            .map((item) => item as Map<String, dynamic>)
-                                                            .toList();
+                                                      if (!mounted) return;
+                                                      await _goToMyHome(context, heres,);
+                                                    } else {
+                                                      progressIndicator.off();
     
-                                                    progressIndicator.off();
-    
-                                                    if (!mounted) return;
-                                                    await _goToMyHome(context, heres,);
+                                                      if (!mounted) return;
+                                                      await _goToMyHome(context,);
+                                                    }
                                                   } else {
                                                     print("Failed to sign in");
                                                     progressIndicator.off();
@@ -238,10 +244,10 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Future<void> _goToMyHome(BuildContext context, List<Map<String, dynamic>> heres) async {
+  Future<void> _goToMyHome(BuildContext context, [List<Map<String, dynamic>>? heres]) async {
     Navigator.pop(context);
     if (widget.main) {
-      Navigator.pushReplacement(context, scale(MyHome(heres: heres), true));
+      Navigator.pushReplacement(context, scale(MyHome(heres: heres!), true));
     }
   }
 }
