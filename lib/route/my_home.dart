@@ -1,12 +1,16 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:here/commons/animation/scale.dart';
 import 'package:here/commons/animation/top_to_bottom.dart';
 import 'package:here/commons/function/get_access_token.dart';
+import 'package:here/commons/function/get_my_location.dart';
 import 'package:here/commons/function/get_refresh_token.dart';
 import 'package:here/commons/function/request_api.dart';
 import 'package:here/commons/function/sign_out.dart';
@@ -16,6 +20,7 @@ import 'package:here/constant.dart';
 import 'package:here/models.dart';
 import 'package:here/route/login.dart';
 import 'package:here/route/write.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class MyHome extends StatefulWidget {
@@ -29,6 +34,9 @@ class MyHome extends StatefulWidget {
 
 class _MyHomeState extends State<MyHome> {
   final _storage = const FlutterSecureStorage();
+  final Completer<GoogleMapController> _googleMapController = Completer();
+
+  DateTime datePickerDate = DateTime.now();
 
   @override
   void initState() {
@@ -56,6 +64,9 @@ class _MyHomeState extends State<MyHome> {
               target: LatLng(37.501396, 126.912186),
               zoom: 15,
             ),
+            onMapCreated: (controller) {
+              _googleMapController.complete(controller);
+            },
           ),
           Positioned(
             top: 60,
@@ -130,7 +141,8 @@ class _MyHomeState extends State<MyHome> {
                   } else {
                     if (snapshot.data!.hereCode != statusOK) {
                       SchedulerBinding.instance.addPostFrameCallback((_) {
-                        Navigator.push(context, topToBottom(const Login(main: false)));
+                        Navigator.push(
+                            context, topToBottom(const Login(main: false)));
                       });
                       return Container();
                     } else {
@@ -165,12 +177,70 @@ class _MyHomeState extends State<MyHome> {
         SpeedDialChild(
           child: const Icon(Icons.my_location_outlined),
           label: 'My location',
-          onTap: () {
+          onTap: () async {
+            final GoogleMapController controller =
+                await _googleMapController.future;
+            final Position position = await getMyLocation();
+
+            controller.animateCamera(CameraUpdate.newLatLng(
+                LatLng(position.latitude, position.longitude)));
+                
+            if (!mounted) return;
+            Provider.of<ControlMarker>(context, listen: false).myLocation(position.latitude, position.longitude);
           },
         ),
         SpeedDialChild(
           child: const Icon(Icons.calendar_month_outlined),
           label: 'Calendar',
+          onTap: () async {
+            final DateTime? selectedDate = await showDatePicker(
+              context: context,
+              initialDate: datePickerDate,
+              firstDate: DateTime(2022),
+              lastDate: DateTime.now(),
+              builder: (context, child) {
+                return Theme(
+                  data: Theme.of(context).copyWith(
+                    textSelectionTheme: const TextSelectionThemeData(
+                      cursorColor: Colors.black,
+                    ),
+                    colorScheme: const ColorScheme.light(
+                      primary: Colors.black,
+                    ),
+                  ),
+                  child: child!,
+                );
+              },
+            );
+            if (selectedDate == null) {
+              return;
+            } else {
+              datePickerDate = selectedDate;
+              
+              final RequsetApiForm getHeresApiForm = RequsetApiForm();
+              final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+              final String date = dateFormat.format(selectedDate);
+              final AccessToken aToken = await getAccessToken(_storage);
+
+              getHeresApiForm.method = 'GET';
+              getHeresApiForm.url = 'http://localhost:8080/here?date=$date';
+              getHeresApiForm.headers = {"Cookie": aToken.accessToken};
+
+              HereJsonForm getHeresJsonForm = await requestApi(getHeresApiForm);
+              getHeresJsonForm.data ??= [];
+              List<Map<String, dynamic>> heres = (getHeresJsonForm.data as List)
+                  .map((item) => item as Map<String, dynamic>)
+                  .toList();
+
+              if (!mounted) return;
+              Provider.of<ControlMarker>(context, listen: false).clear();
+
+              for (int i = 0; i < heres.length; i++) {
+                Here here = Here.fromJson(heres[i]);
+                Provider.of<ControlMarker>(context, listen: false).add(here, BitmapDescriptor.hueRed);
+              }
+            }
+          },
         ),
         SpeedDialChild(
           child: const Icon(Icons.add_location_alt_outlined),
