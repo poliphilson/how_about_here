@@ -18,6 +18,7 @@ import 'package:here/commons/provider/control_here_marker.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/constant.dart';
 import 'package:here/models.dart';
+import 'package:here/route/check_point.dart';
 import 'package:here/route/login.dart';
 import 'package:here/route/write.dart';
 import 'package:intl/intl.dart';
@@ -95,6 +96,13 @@ class _MyHomeState extends State<MyHome> {
         SpeedDialChild(
           child: const Icon(Icons.edit_note_outlined),
           label: 'Edit',
+        ),
+        SpeedDialChild(
+          child: const Icon(Icons.location_on_outlined),
+          label: 'Check point',
+          onTap: () {
+            Navigator.push(context, scale(const CheckPoint(), false));
+          },
         ),
         SpeedDialChild(
           child: const Icon(Icons.recycling_outlined),
