@@ -189,7 +189,7 @@ class _WriteState extends State<Write> {
               child: TextField(
                 controller: _contentsTextEditController,
                 cursorColor: Colors.black,
-                maxLines: 8,
+                maxLines: null,
                 decoration: const InputDecoration(
                   hintText: 'What are you doing here?',
                   enabledBorder: UnderlineInputBorder(
