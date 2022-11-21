@@ -11,7 +11,7 @@ import 'package:here/commons/function/get_area.dart';
 import 'package:here/commons/function/get_locality.dart';
 import 'package:here/commons/function/get_my_location.dart';
 import 'package:here/commons/function/request_api.dart';
-import 'package:here/commons/provider/control_marker.dart';
+import 'package:here/commons/provider/control_here_marker.dart';
 import 'package:here/commons/provider/progress_indicator_status.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/commons/widget/new_route_base.dart';
@@ -119,7 +119,7 @@ class _WriteState extends State<Write> {
                                     Here here = Here.fromJson(hereJsonForm.data);
 
                                     if (!mounted) return;
-                                    Provider.of<ControlMarker>(context, listen: false).add(here, BitmapDescriptor.hueRed);
+                                    Provider.of<ControlHereMarker>(context, listen: false).add(here, BitmapDescriptor.hueRed);
                                     progressIndicator.off();
                                     Navigator.pop(context);
                                   } else {

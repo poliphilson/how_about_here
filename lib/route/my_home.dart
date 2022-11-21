@@ -14,7 +14,7 @@ import 'package:here/commons/function/get_my_location.dart';
 import 'package:here/commons/function/get_refresh_token.dart';
 import 'package:here/commons/function/request_api.dart';
 import 'package:here/commons/function/sign_out.dart';
-import 'package:here/commons/provider/control_marker.dart';
+import 'package:here/commons/provider/control_here_marker.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/constant.dart';
 import 'package:here/models.dart';
@@ -44,7 +44,7 @@ class _MyHomeState extends State<MyHome> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       for (int i = 0; i < widget.heres.length; i++) {
         here = Here.fromJson(widget.heres[i]);
-        Provider.of<ControlMarker>(context, listen: false).add(here, BitmapDescriptor.hueRed);
+        Provider.of<ControlHereMarker>(context, listen: false).add(here, BitmapDescriptor.hueRed);
       }
     });
 
@@ -58,7 +58,7 @@ class _MyHomeState extends State<MyHome> {
         children: [
           GoogleMap(
             markers: Set.from(
-                Provider.of<ControlMarker>(context, listen: true).markers),
+                Provider.of<ControlHereMarker>(context, listen: true).markers),
             myLocationButtonEnabled: false,
             initialCameraPosition: const CameraPosition(
               target: LatLng(37.501396, 126.912186),
@@ -186,7 +186,7 @@ class _MyHomeState extends State<MyHome> {
                 LatLng(position.latitude, position.longitude)));
                 
             if (!mounted) return;
-            Provider.of<ControlMarker>(context, listen: false).myLocation(position.latitude, position.longitude);
+            Provider.of<ControlHereMarker>(context, listen: false).myLocation(position.latitude, position.longitude);
           },
         ),
         SpeedDialChild(
@@ -233,11 +233,11 @@ class _MyHomeState extends State<MyHome> {
                   .toList();
 
               if (!mounted) return;
-              Provider.of<ControlMarker>(context, listen: false).clear();
+              Provider.of<ControlHereMarker>(context, listen: false).clear();
 
               for (int i = 0; i < heres.length; i++) {
                 Here here = Here.fromJson(heres[i]);
-                Provider.of<ControlMarker>(context, listen: false).add(here, BitmapDescriptor.hueRed);
+                Provider.of<ControlHereMarker>(context, listen: false).add(here, BitmapDescriptor.hueRed);
               }
             }
           },
@@ -261,4 +261,5 @@ class _MyHomeState extends State<MyHome> {
 /*example lat lng
 37.5012, 126.914
 37.501396, 126.912186
+37.500484, 126.91186
 */

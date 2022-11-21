@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:here/commons/animation/scale.dart';
 import 'package:here/commons/animation/top_to_bottom.dart';
 import 'package:here/commons/function/get_access_token.dart';
-import 'package:here/commons/provider/control_marker.dart';
+import 'package:here/commons/provider/control_here_marker.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/route/my_home.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +20,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ProgressIndicatorStatus()),
-        ChangeNotifierProvider(create: (_) => ControlMarker())
+        ChangeNotifierProvider(create: (_) => ControlHereMarker())
       ],
       child: MaterialApp(
         title: 'Here',
