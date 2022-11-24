@@ -13,7 +13,6 @@ class ControlCheckPoint extends ChangeNotifier {
 
   void delete(int index) {
     _points.removeAt(index);
-    //_points.removeWhere((element) => element.pid == pid);
     notifyListeners();
   }
 
