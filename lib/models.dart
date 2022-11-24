@@ -61,3 +61,17 @@ class User {
     profileImage = json['profile_image'];
   }
 }
+
+class Point {
+  late int pid;
+  late String createdAt;
+  late String description;
+  late Map<String, dynamic> location;
+
+  Point.fromJson(Map json) {
+    pid = json['pid'];
+    createdAt = json['created_at']; 
+    description = json['description'];
+    location = json['location'];
+  }
+}
