@@ -101,7 +101,7 @@ class _MyHomeState extends State<MyHome> {
           child: const Icon(Icons.location_on_outlined),
           label: 'Check point',
           onTap: () {
-            Navigator.push(context, scale(const CheckPoint(), false));
+            Navigator.push(context, scale(const CheckPoint(main: true,), false));
           },
         ),
         SpeedDialChild(
