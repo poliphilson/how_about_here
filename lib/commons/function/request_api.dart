@@ -24,10 +24,13 @@ Future<HereJsonForm> requestApi(RequsetApiForm requestForm) async {
       break;
 
     case 'delete':
+      responseOfRequest = await http.delete(Uri.parse(requestForm.url),
+          headers: requestForm.headers);
       break;
   }
 
-  final HereJsonForm responseForm = _bindJson(responseOfRequest.body, responseOfRequest.headers);
+  final HereJsonForm responseForm =
+      _bindJson(responseOfRequest.body, responseOfRequest.headers);
 
   return responseForm;
 }
@@ -38,20 +41,23 @@ Future<HereJsonForm> sendHere(SendHereForm sendHereForm, String aToken) async {
   Uri uri = Uri.parse('http://localhost:8080/here');
   http.MultipartRequest request = http.MultipartRequest('POST', uri);
   Map<String, String> headers = {"Cookie": aToken};
-  
+
   request.headers.addAll(headers);
   request.fields['contents'] = sendHereForm.contents;
   request.fields['is_privated'] = sendHereForm.isPrivated.toString();
   request.fields['x'] = sendHereForm.x.toString();
   request.fields['y'] = sendHereForm.y.toString();
   for (int i = 0; i < sendHereForm.images.length; i++) {
-    request.files.add(await http.MultipartFile.fromPath('image[]', sendHereForm.images[i]!.path));
+    request.files.add(await http.MultipartFile.fromPath(
+        'image[]', sendHereForm.images[i]!.path));
   }
 
   responseOfRequest = await request.send();
 
-  final String responseToString = await responseOfRequest.stream.bytesToString();
-  final HereJsonForm responseForm = _bindJson(responseToString, responseOfRequest.headers);
+  final String responseToString =
+      await responseOfRequest.stream.bytesToString();
+  final HereJsonForm responseForm =
+      _bindJson(responseToString, responseOfRequest.headers);
 
   return responseForm;
 }
