@@ -25,10 +25,12 @@ class _CheckPointState extends State<CheckPoint> {
   final _storage = const FlutterSecureStorage();
   final ScrollController _scrollController = ScrollController();
   final Completer<GoogleMapController> _googleMapController = Completer();
-  final int limit = 10;
+  final TextEditingController _descriptionTextEditController = TextEditingController();
+  final int limit = 15;
 
   List<Marker> markers = [];
   int offset = 0;
+  bool edit = false;
 
   @override
   void initState() {
@@ -58,6 +60,7 @@ class _CheckPointState extends State<CheckPoint> {
   @override
   void dispose() {
     _scrollController.removeListener(_scrollListener);
+    _descriptionTextEditController.dispose();
     super.dispose();
   }
 
@@ -81,7 +84,8 @@ class _CheckPointState extends State<CheckPoint> {
                     ),
                     onPressed: () {
                       Navigator.pop(context);
-                      Provider.of<ControlCheckPoint>(context, listen: false).clear();
+                      Provider.of<ControlCheckPoint>(context, listen: false)
+                          .clear();
                     },
                   ),
                 ),
@@ -122,9 +126,11 @@ class _CheckPointState extends State<CheckPoint> {
 
                 return ListTile(
                   title: Text(
-                      Provider.of<ControlCheckPoint>(context, listen: false)
-                          .points[index]
-                          .description),
+                    Provider.of<ControlCheckPoint>(context, listen: false)
+                        .points[index]
+                        .description,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   subtitle: Text(prettyDate),
                   trailing: widget.main
                       ? Row(
@@ -132,29 +138,44 @@ class _CheckPointState extends State<CheckPoint> {
                           children: [
                             IconButton(
                               icon: const Icon(
-                                Icons.edit,
+                                Icons.notes_rounded,
                                 color: Colors.blue,
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                checkPointDialog(
+                                    context,
+                                    Provider.of<ControlCheckPoint>(context, listen: false).points[index].description,
+                                    Provider.of<ControlCheckPoint>(context, listen: false).points[index].pid,
+                                    index
+                                );
+                              },
                             ),
                             IconButton(
                               icon: const Icon(
-                                Icons.delete,
+                                Icons.delete_rounded,
                                 color: Colors.red,
                               ),
                               onPressed: () async {
-                                AccessToken aToken = await getAccessToken(_storage);
-                                RequsetApiForm requsetApiForm = RequsetApiForm();
+                                AccessToken aToken =
+                                    await getAccessToken(_storage);
+                                RequsetApiForm requsetApiForm =
+                                    RequsetApiForm();
                                 requsetApiForm.method = 'DELETE';
-                                requsetApiForm.headers = {"Cookie": aToken.accessToken};
+                                requsetApiForm.headers = {
+                                  "Cookie": aToken.accessToken
+                                };
                                 if (!mounted) return;
-                                requsetApiForm.url = 'http://localhost:8080/point/${Provider.of<ControlCheckPoint>(context, listen: false).points[index].pid}';
-                                HereJsonForm hereJsonForm = await requestApi(requsetApiForm);
+                                requsetApiForm.url =
+                                    'http://localhost:8080/point/${Provider.of<ControlCheckPoint>(context, listen: false).points[index].pid}';
+                                HereJsonForm hereJsonForm =
+                                    await requestApi(requsetApiForm);
                                 if (hereJsonForm.hereCode != statusOK) {
                                   print('fail');
                                 } else {
                                   if (!mounted) return;
-                                  Provider.of<ControlCheckPoint>(context, listen: false).delete(index);
+                                  Provider.of<ControlCheckPoint>(context,
+                                          listen: false)
+                                      .delete(index);
                                 }
                               },
                             ),
@@ -232,5 +253,113 @@ class _CheckPointState extends State<CheckPoint> {
       pointList.add(point);
     }
     return pointList;
+  }
+
+  void checkPointDialog(BuildContext context, String description, int pid, int index) {
+    final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
+    
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Center(
+                child: Text('Description'),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    edit
+                        ? ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minWidth: width,
+                            minHeight: height / 15
+                          ),
+                          child: TextField(
+                              controller: _descriptionTextEditController,
+                              maxLines: null,
+                              cursorColor: Colors.black,
+                              decoration: const InputDecoration(
+                                isDense: true,
+                                contentPadding: EdgeInsets.all(0),
+                                hintText: 'What do you want to write down?',
+                                enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.transparent)),
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.transparent)),
+                              ),
+                            ),
+                        )
+                        : ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minWidth: width,
+                            minHeight: height / 15,
+                          ),
+                            child: Text(description),
+                          ),
+                  ],
+                ),
+              ),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    if (edit) {
+                      AccessToken aToken = await getAccessToken(_storage);
+                      RequsetApiForm requestApiForm = RequsetApiForm();
+                      requestApiForm.method = 'PATCH';
+                      requestApiForm.headers = {
+                        'Cookie': aToken.accessToken,
+                        "Content-Type": "application/json"
+                      };
+                      requestApiForm.url = 'http://localhost:8080/point/$pid';
+                      requestApiForm.body = {"description": _descriptionTextEditController.text};
+                      HereJsonForm hereJsonForm = await requestApi(requestApiForm);
+                      if (hereJsonForm.hereCode != statusOK) {
+                        print('fail');
+                      } else {
+                        setState(() {
+                          description = _descriptionTextEditController.text;
+                          edit = false;
+                        });
+                        if (!mounted) return;
+                        Provider.of<ControlCheckPoint>(context, listen: false).edit(index, _descriptionTextEditController.text);
+                      }
+                    } else {
+                      _descriptionTextEditController.text = description;
+                      setState(() {
+                        edit = true;
+                      });
+                    }
+                  },
+                  child: edit
+                  ? const Text('Save')
+                  : const Text('Edit'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (edit) {
+                      setState(() {
+                        edit = false;
+                      });
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: edit 
+                  ? const Text('Cancel', style: TextStyle(color: Colors.red),)
+                  : const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    ).then((value) {
+      edit = false;
+    });
   }
 }
