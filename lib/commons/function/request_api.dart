@@ -3,34 +3,32 @@ import 'package:http/http.dart' as http;
 import 'package:here/json_key.dart';
 import 'dart:convert';
 
-Future<HereJsonForm> requestApi(RequsetApiForm requestForm) async {
+Future<HereJsonForm> requestApi(RequsetApiForm requestApiForm) async {
   late final http.Response responseOfRequest;
 
-  switch (requestForm.method.toLowerCase()) {
+  switch (requestApiForm.method.toLowerCase()) {
     case 'get':
-      responseOfRequest = await http.get(
-        Uri.parse(requestForm.url),
-        headers: requestForm.headers,
-      );
+      responseOfRequest = await http.get(Uri.parse(requestApiForm.url),
+          headers: requestApiForm.headers);
       break;
 
     case 'post':
-      responseOfRequest = await http.post(Uri.parse(requestForm.url),
-          headers: requestForm.headers, body: json.encode(requestForm.body));
-
+      responseOfRequest = await http.post(Uri.parse(requestApiForm.url),
+          headers: requestApiForm.headers, body: json.encode(requestApiForm.body));
       break;
 
     case 'patch':
+      responseOfRequest = await http.patch(Uri.parse(requestApiForm.url),
+          headers: requestApiForm.headers, body: json.encode(requestApiForm.body));
       break;
 
     case 'delete':
-      responseOfRequest = await http.delete(Uri.parse(requestForm.url),
-          headers: requestForm.headers);
+      responseOfRequest = await http.delete(Uri.parse(requestApiForm.url),
+          headers: requestApiForm.headers);
       break;
   }
 
-  final HereJsonForm responseForm =
-      _bindJson(responseOfRequest.body, responseOfRequest.headers);
+  final HereJsonForm responseForm = _bindJson(responseOfRequest.body, responseOfRequest.headers);
 
   return responseForm;
 }
