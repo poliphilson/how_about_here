@@ -130,6 +130,7 @@ class _CheckPointState extends State<CheckPoint> {
                         .points[index]
                         .description,
                     overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   subtitle: Text(prettyDate),
                   trailing: widget.main
