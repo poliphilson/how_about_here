@@ -16,7 +16,8 @@ class ControlCheckPoint extends ChangeNotifier {
     notifyListeners();
   }
 
-  void edit() {
+  void edit(int index, String description) {
+    _points[index].description = description;
     notifyListeners();
   }
 
