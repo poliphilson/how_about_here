@@ -2,10 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:here/commons/function/get_access_token.dart';
+import 'package:here/commons/function/get_address_from_location.dart';
+import 'package:here/commons/function/get_area.dart';
+import 'package:here/commons/function/get_locality.dart';
 import 'package:here/commons/function/request_api.dart';
 import 'package:here/commons/provider/control_check_point.dart';
+import 'package:here/commons/provider/control_here_location.dart';
 import 'package:here/commons/widget/new_route_base.dart';
 import 'package:here/constant.dart';
 import 'package:here/models.dart';
@@ -25,7 +30,8 @@ class _CheckPointState extends State<CheckPoint> {
   final _storage = const FlutterSecureStorage();
   final ScrollController _scrollController = ScrollController();
   final Completer<GoogleMapController> _googleMapController = Completer();
-  final TextEditingController _descriptionTextEditController = TextEditingController();
+  final TextEditingController _descriptionTextEditController =
+      TextEditingController();
   final int limit = 15;
 
   List<Marker> markers = [];
@@ -78,10 +84,12 @@ class _CheckPointState extends State<CheckPoint> {
                 Container(
                   padding: const EdgeInsets.only(left: 10),
                   child: IconButton(
-                    icon: const Icon(
-                      Icons.cancel_rounded,
-                      color: Colors.red,
-                    ),
+                    icon: widget.main
+                        ? const Icon(
+                            Icons.cancel_rounded,
+                            color: Colors.red,
+                          )
+                        : const Icon(Icons.arrow_back),
                     onPressed: () {
                       Navigator.pop(context);
                       Provider.of<ControlCheckPoint>(context, listen: false)
@@ -133,25 +141,30 @@ class _CheckPointState extends State<CheckPoint> {
                     maxLines: 1,
                   ),
                   subtitle: Text(prettyDate),
-                  trailing: widget.main
-                      ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.notes_rounded,
-                                color: Colors.blue,
-                              ),
-                              onPressed: () {
-                                checkPointDialog(
-                                    context,
-                                    Provider.of<ControlCheckPoint>(context, listen: false).points[index].description,
-                                    Provider.of<ControlCheckPoint>(context, listen: false).points[index].pid,
-                                    index
-                                );
-                              },
-                            ),
-                            IconButton(
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.notes_rounded,
+                          color: Colors.blue,
+                        ),
+                        onPressed: () {
+                          checkPointDialog(
+                              context,
+                              Provider.of<ControlCheckPoint>(context,
+                                      listen: false)
+                                  .points[index]
+                                  .description,
+                              Provider.of<ControlCheckPoint>(context,
+                                      listen: false)
+                                  .points[index]
+                                  .pid,
+                              index);
+                        },
+                      ),
+                      widget.main
+                          ? IconButton(
                               icon: const Icon(
                                 Icons.delete_rounded,
                                 color: Colors.red,
@@ -179,16 +192,29 @@ class _CheckPointState extends State<CheckPoint> {
                                       .delete(index);
                                 }
                               },
+                            )
+                          : IconButton(
+                              icon: const Icon(
+                                Icons.check_circle_outline_rounded,
+                                color: Colors.blue,
+                              ),
+                              onPressed: () async {
+                                double latitude = Provider.of<ControlCheckPoint>(context, listen: false).points[index].location['x'];
+                                double longitude = Provider.of<ControlCheckPoint>(context, listen: false).points[index].location['y'];
+
+                                final Placemark placemark = await getAddressFromLocation(latitude, longitude);
+
+                                if (!mounted) return;
+                                Provider.of<ControlHereLocation>(context, listen: false).setLatitude(latitude);
+                                Provider.of<ControlHereLocation>(context, listen: false).setLongitude(longitude);
+                                Provider.of<ControlHereLocation>(context, listen: false).setArea(getArea(placemark));
+                                Provider.of<ControlHereLocation>(context, listen: false).setLocality(getLocality(placemark));
+
+                                Navigator.pop(context);
+                              },
                             ),
-                          ],
-                        )
-                      : IconButton(
-                          icon: const Icon(
-                            Icons.check_circle_outline_rounded,
-                            color: Colors.blue,
-                          ),
-                          onPressed: () {},
-                        ),
+                    ],
+                  ),
                   onTap: () async {
                     final GoogleMapController controller =
                         await _googleMapController.future;
@@ -256,10 +282,11 @@ class _CheckPointState extends State<CheckPoint> {
     return pointList;
   }
 
-  void checkPointDialog(BuildContext context, String description, int pid, int index) {
+  void checkPointDialog(
+      BuildContext context, String description, int pid, int index) {
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
-    
+
     showDialog(
       context: context,
       builder: (context) {
@@ -274,11 +301,9 @@ class _CheckPointState extends State<CheckPoint> {
                   children: [
                     edit
                         ? ConstrainedBox(
-                          constraints: BoxConstraints(
-                            minWidth: width,
-                            minHeight: height / 15
-                          ),
-                          child: TextField(
+                            constraints: BoxConstraints(
+                                minWidth: width, minHeight: height / 15),
+                            child: TextField(
                               controller: _descriptionTextEditController,
                               maxLines: null,
                               cursorColor: Colors.black,
@@ -287,17 +312,19 @@ class _CheckPointState extends State<CheckPoint> {
                                 contentPadding: EdgeInsets.all(0),
                                 hintText: 'What do you want to write down?',
                                 enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.transparent)),
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent)),
                                 focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.transparent)),
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent)),
                               ),
                             ),
-                        )
+                          )
                         : ConstrainedBox(
-                          constraints: BoxConstraints(
-                            minWidth: width,
-                            minHeight: height / 15,
-                          ),
+                            constraints: BoxConstraints(
+                              minWidth: width,
+                              minHeight: height / 15,
+                            ),
                             child: Text(description),
                           ),
                   ],
@@ -317,8 +344,11 @@ class _CheckPointState extends State<CheckPoint> {
                         "Content-Type": "application/json"
                       };
                       requestApiForm.url = 'http://localhost:8080/point/$pid';
-                      requestApiForm.body = {"description": _descriptionTextEditController.text};
-                      HereJsonForm hereJsonForm = await requestApi(requestApiForm);
+                      requestApiForm.body = {
+                        "description": _descriptionTextEditController.text
+                      };
+                      HereJsonForm hereJsonForm =
+                          await requestApi(requestApiForm);
                       if (hereJsonForm.hereCode != statusOK) {
                         print('fail');
                       } else {
@@ -327,7 +357,8 @@ class _CheckPointState extends State<CheckPoint> {
                           edit = false;
                         });
                         if (!mounted) return;
-                        Provider.of<ControlCheckPoint>(context, listen: false).edit(index, _descriptionTextEditController.text);
+                        Provider.of<ControlCheckPoint>(context, listen: false)
+                            .edit(index, _descriptionTextEditController.text);
                       }
                     } else {
                       _descriptionTextEditController.text = description;
@@ -336,9 +367,7 @@ class _CheckPointState extends State<CheckPoint> {
                       });
                     }
                   },
-                  child: edit
-                  ? const Text('Save')
-                  : const Text('Edit'),
+                  child: edit ? const Text('Save') : const Text('Edit'),
                 ),
                 TextButton(
                   onPressed: () {
@@ -350,9 +379,12 @@ class _CheckPointState extends State<CheckPoint> {
                       Navigator.pop(context);
                     }
                   },
-                  child: edit 
-                  ? const Text('Cancel', style: TextStyle(color: Colors.red),)
-                  : const Text('OK'),
+                  child: edit
+                      ? const Text(
+                          'Cancel',
+                          style: TextStyle(color: Colors.red),
+                        )
+                      : const Text('OK'),
                 ),
               ],
             );

@@ -5,18 +5,21 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:here/commons/animation/right_to_left.dart';
 import 'package:here/commons/function/get_access_token.dart';
 import 'package:here/commons/function/get_address_from_location.dart';
 import 'package:here/commons/function/get_area.dart';
 import 'package:here/commons/function/get_locality.dart';
 import 'package:here/commons/function/get_my_location.dart';
 import 'package:here/commons/function/request_api.dart';
+import 'package:here/commons/provider/control_here_location.dart';
 import 'package:here/commons/provider/control_here_marker.dart';
 import 'package:here/commons/provider/progress_indicator_status.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/commons/widget/new_route_base.dart';
 import 'package:here/constant.dart';
 import 'package:here/models.dart';
+import 'package:here/route/check_point.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -31,13 +34,9 @@ class _WriteState extends State<Write> {
   final _storage = const FlutterSecureStorage();
   final TextEditingController _contentsTextEditController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
-  late final Position position;
-  late final Placemark placemark;
 
   List<XFile?> images = [];
   XFile? video;
-  String locality = 'Hmm...';
-  String area = ' ';
   bool private = false;
 
   @override
@@ -49,13 +48,15 @@ class _WriteState extends State<Write> {
   }
 
   _getMyCurrentAddress() async {
-    position = await getMyLocation();
-    placemark = await getAddressFromLocation(position.latitude, position.longitude);
-    setState(() {
-      // Name > Subthoroughfare > Street > Sublocality > Locality > Administrative area > Country
-      area = getArea(placemark);
-      locality = getLocality(placemark);
-    });
+    final Position position = await getMyLocation();
+    final Placemark placemark = await getAddressFromLocation(position.latitude, position.longitude);
+    // Name > Subthoroughfare > Street > Sublocality > Locality > Administrative area > Country
+    if (!mounted) return;
+    Provider.of<ControlHereLocation>(context, listen: false).setLatitude(position.latitude);
+    Provider.of<ControlHereLocation>(context, listen: false).setLongitude(position.longitude);
+    Provider.of<ControlHereLocation>(context, listen: false).setArea(getArea(placemark));
+    Provider.of<ControlHereLocation>(context, listen: false).setLocality(getLocality(placemark));
+    
   }
 
   @override
@@ -107,11 +108,12 @@ class _WriteState extends State<Write> {
 
                                   AccessToken aToken = await getAccessToken(_storage);
 
+                                  if (!mounted) return;
                                   final SendHereForm sendHereForm = SendHereForm();
                                   sendHereForm.contents = _contentsTextEditController.text;
                                   sendHereForm.isPrivated = private;
-                                  sendHereForm.x = position.latitude;
-                                  sendHereForm.y = position.longitude;
+                                  sendHereForm.x = Provider.of<ControlHereLocation>(context, listen: false).latitude;
+                                  sendHereForm.y = Provider.of<ControlHereLocation>(context, listen: false).longitude;
                                   sendHereForm.images = images;
 
                                   HereJsonForm hereJsonForm =  await sendHere(sendHereForm, aToken.accessToken);
@@ -154,7 +156,7 @@ class _WriteState extends State<Write> {
                 padding: const EdgeInsets.only(left: 26, right: 26),
                 child: FittedBox(
                   child: Text(
-                    locality,
+                    Provider.of<ControlHereLocation>(context, listen: true).locality,
                   ),
                 ),
               ),
@@ -165,9 +167,29 @@ class _WriteState extends State<Write> {
                 padding: const EdgeInsets.only(left: 26, right: 26),
                 child: FittedBox(
                   child: Text(
-                    area,
+                    Provider.of<ControlHereLocation>(context, listen: true).area,
                   ),
                 ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.location_on_outlined, color: Colors.blue,),
+                    onPressed: () {
+                      Navigator.push(context, rightToLeft(const CheckPoint(main: false,)));
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.my_location_outlined, color: Colors.blue,),
+                    onPressed: () async {
+                      await _getMyCurrentAddress();
+                    },
+                  ),
+                ],
               ),
             ),
             SizedBox(
