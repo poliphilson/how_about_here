@@ -77,6 +77,8 @@ class _WriteState extends State<Write> {
                       Container(
                         padding: const EdgeInsets.only(left: 10),
                         child: IconButton(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
                           icon: const Icon(
                             Icons.cancel_rounded,
                             color: Colors.red,
@@ -99,6 +101,8 @@ class _WriteState extends State<Write> {
                                 child: const CustomProgressIndicator(),
                               )
                             : IconButton(
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
                                 icon: const Icon(
                                   Icons.send,
                                   color: Colors.blue,
