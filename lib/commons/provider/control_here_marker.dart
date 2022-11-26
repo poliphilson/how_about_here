@@ -21,11 +21,11 @@ class ControlHereMarker extends ChangeNotifier {
     notifyListeners();
   }
 
-  void myLocation(double latitude, double longitude) async {
+  void myLocation(double latitude, double longitude, double color) async {
     _markers.add(Marker(
       markerId: const MarkerId('my_location'),
       position: LatLng(latitude, longitude),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
+      icon: BitmapDescriptor.defaultMarkerWithHue(color),
     ));
     notifyListeners();
 
