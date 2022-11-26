@@ -37,6 +37,7 @@ class MyHome extends StatefulWidget {
 class _MyHomeState extends State<MyHome> {
   final _storage = const FlutterSecureStorage();
   final Completer<GoogleMapController> _googleMapController = Completer();
+  final TextEditingController _descriptionTextEditController = TextEditingController();
 
   DateTime datePickerDate = DateTime.now();
 
@@ -51,6 +52,12 @@ class _MyHomeState extends State<MyHome> {
     });
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _descriptionTextEditController.dispose();
+    super.dispose();
   }
 
   @override
@@ -187,15 +194,14 @@ class _MyHomeState extends State<MyHome> {
           child: const Icon(Icons.my_location_outlined),
           label: 'My location',
           onTap: () async {
-            final GoogleMapController controller =
-                await _googleMapController.future;
+            final GoogleMapController controller = await _googleMapController.future;
             final Position position = await getMyLocation();
 
             controller.animateCamera(CameraUpdate.newLatLng(
                 LatLng(position.latitude, position.longitude)));
                 
             if (!mounted) return;
-            Provider.of<ControlHereMarker>(context, listen: false).myLocation(position.latitude, position.longitude);
+            Provider.of<ControlHereMarker>(context, listen: false).myLocation(position.latitude, position.longitude, BitmapDescriptor.hueViolet);
           },
         ),
         SpeedDialChild(
@@ -254,12 +260,23 @@ class _MyHomeState extends State<MyHome> {
         SpeedDialChild(
           child: const Icon(Icons.add_location_alt_outlined),
           label: 'Add check point',
+          onTap: () async {   
+            final GoogleMapController controller =
+                await _googleMapController.future;
+            final Position position = await getMyLocation();
+
+            controller.animateCamera(CameraUpdate.newLatLng(
+                LatLng(position.latitude, position.longitude)));
+
+            if (!mounted) return;
+            checkPointDialog(context, position.latitude, position.longitude);
+          },
         ),
         SpeedDialChild(
           child: const Icon(Icons.edit_location_outlined),
           label: 'Write',
           onTap: () {
-            Navigator.push(context, scale(const Write(), false)).then((value) {
+            Navigator.push(context, scale(const Write(), false)).then((_) {
               Provider.of<ControlHereLocation>(context, listen: false).setLocality('Hmm...');
               Provider.of<ControlHereLocation>(context, listen: false).setArea(' ');
             });
@@ -268,10 +285,93 @@ class _MyHomeState extends State<MyHome> {
       ],
     );
   }
+
+  void checkPointDialog(BuildContext context, double latitude, double longitude) {
+    final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Center(
+                child: Text('Description'),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [ConstrainedBox(
+                            constraints: BoxConstraints(
+                                minWidth: width, minHeight: height / 15),
+                            child: TextField(
+                              controller: _descriptionTextEditController,
+                              maxLines: null,
+                              cursorColor: Colors.black,
+                              decoration: const InputDecoration(
+                                isDense: true,
+                                contentPadding: EdgeInsets.all(0),
+                                hintText: 'What do you want to write down?',
+                                enabledBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent)),
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent)),
+                              ),
+                            ),
+                          )
+                  ],
+                ),
+              ),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    AccessToken aToken = await getAccessToken(_storage);
+                    RequsetApiForm requestApiForm = RequsetApiForm();
+                    requestApiForm.method = 'POST';
+                    requestApiForm.headers = {
+                      'Cookie': aToken.accessToken,
+                      "Content-Type": "application/json"
+                    };
+                    requestApiForm.url = 'http://localhost:8080/point';
+                    requestApiForm.body = {
+                      'x': latitude,
+                      'y': longitude,
+                      'description': _descriptionTextEditController.text
+                    };
+                    HereJsonForm hereJsonForm = await requestApi(requestApiForm);
+                    if (hereJsonForm.hereCode != statusOK) {
+                      print('fail');
+                    } else {
+                      if (!mounted) return;
+                      Navigator.pop(context);
+                      Provider.of<ControlHereMarker>(context, listen: false).myLocation(latitude, longitude, BitmapDescriptor.hueCyan);
+                    }
+                  },
+                  child: const Text('Save'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Cancel', style: TextStyle(color: Colors.red))
+                ),
+              ],
+            );
+          },
+        );
+      },
+    ).then((value) {
+      _descriptionTextEditController.text = '';
+    });
+  }
 }
 
 /*example lat lng
-37.5012, 126.914
+37.5012,  
 37.501396, 126.912186
 37.500484, 126.91186
 */
