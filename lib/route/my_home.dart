@@ -117,7 +117,7 @@ class _MyHomeState extends State<MyHome> {
           child: const Icon(Icons.recycling_outlined),
           label: 'Recycle bin',
           onTap: () {
-            Navigator.push(context, scale(const RecycleBin(), false));
+            Navigator.push(context, scale(RecycleBin(date: datePickerDate,), false));
           },
         ),
         SpeedDialChild(
