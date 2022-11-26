@@ -14,6 +14,7 @@ import 'package:here/commons/function/get_my_location.dart';
 import 'package:here/commons/function/get_refresh_token.dart';
 import 'package:here/commons/function/request_api.dart';
 import 'package:here/commons/function/sign_out.dart';
+import 'package:here/commons/provider/control_here_location.dart';
 import 'package:here/commons/provider/control_here_marker.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/constant.dart';
@@ -258,7 +259,10 @@ class _MyHomeState extends State<MyHome> {
           child: const Icon(Icons.edit_location_outlined),
           label: 'Write',
           onTap: () {
-            Navigator.push(context, scale(const Write(), false));
+            Navigator.push(context, scale(const Write(), false)).then((value) {
+              Provider.of<ControlHereLocation>(context, listen: false).setLocality('Hmm...');
+              Provider.of<ControlHereLocation>(context, listen: false).setArea(' ');
+            });
           },
         ),
       ],
