@@ -65,7 +65,7 @@ class _CheckPointState extends State<CheckPoint> {
 
   @override
   void dispose() {
-    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
     _descriptionTextEditController.dispose();
     super.dispose();
   }
