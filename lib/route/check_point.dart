@@ -211,6 +211,7 @@ class _CheckPointState extends State<CheckPoint> {
                                 Provider.of<ControlHereLocation>(context, listen: false).setLocality(getLocality(placemark));
 
                                 Navigator.pop(context);
+                                Provider.of<ControlCheckPoint>(context, listen: false).clear();
                               },
                             ),
                     ],
