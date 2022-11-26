@@ -21,6 +21,7 @@ import 'package:here/constant.dart';
 import 'package:here/models.dart';
 import 'package:here/route/check_point.dart';
 import 'package:here/route/login.dart';
+import 'package:here/route/recycle_bin.dart';
 import 'package:here/route/write.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -115,6 +116,9 @@ class _MyHomeState extends State<MyHome> {
         SpeedDialChild(
           child: const Icon(Icons.recycling_outlined),
           label: 'Recycle bin',
+          onTap: () {
+            Navigator.push(context, scale(const RecycleBin(), false));
+          },
         ),
         SpeedDialChild(
           child: const Icon(Icons.logout_outlined),
