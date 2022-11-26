@@ -108,7 +108,7 @@ class _RecycleBinState extends State<RecycleBin> with TickerProviderStateMixin{
                   controller: _pointScrollController,
                   itemCount: pointList.length,
                   itemBuilder: (context, index) {
-                    final String parseDate = pointList[index].createdAt;
+                    final String parseDate = pointList[index].createdAt.split('.').first;
                     final DateTime date = DateTime.parse(parseDate);
                     final DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm');
                     final String prettyDate = dateFormat.format(date);
