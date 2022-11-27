@@ -10,6 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:here/commons/animation/scale.dart';
 import 'package:here/commons/animation/top_to_bottom.dart';
 import 'package:here/commons/function/get_access_token.dart';
+import 'package:here/commons/function/get_my_information.dart';
 import 'package:here/commons/function/get_my_location.dart';
 import 'package:here/commons/function/get_refresh_token.dart';
 import 'package:here/commons/function/request_api.dart';
@@ -20,6 +21,7 @@ import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/constant.dart';
 import 'package:here/models.dart';
 import 'package:here/route/check_point.dart';
+import 'package:here/route/edit_my_information.dart';
 import 'package:here/route/login.dart';
 import 'package:here/route/recycle_bin.dart';
 import 'package:here/route/write.dart';
@@ -105,6 +107,9 @@ class _MyHomeState extends State<MyHome> {
         SpeedDialChild(
           child: const Icon(Icons.edit_note_outlined),
           label: 'Edit',
+          onTap: () {
+            Navigator.push(context, scale(const EditMyInfomation(), false));
+          }
         ),
         SpeedDialChild(
           child: const Icon(Icons.location_on_outlined),
@@ -149,33 +154,20 @@ class _MyHomeState extends State<MyHome> {
               return Container();
             } else {
               String aToken = snapshot.data!.accessToken;
-              final RequsetApiForm requestApiForm = RequsetApiForm();
-              requestApiForm.method = 'GET';
-              requestApiForm.headers = {"Cookie": aToken};
-              requestApiForm.url = 'http://localhost:8080/user';
-              return FutureBuilder<HereJsonForm>(
-                future: requestApi(requestApiForm),
+              return FutureBuilder<User>(
+                future: getMyInformation(_storage),
                 builder: (context, snapshot) {
                   if (snapshot.hasData == false) {
                     return const CustomProgressIndicator();
                   } else {
-                    if (snapshot.data!.hereCode != statusOK) {
-                      SchedulerBinding.instance.addPostFrameCallback((_) {
-                        Navigator.push(
-                            context, topToBottom(const Login(main: false)));
-                      });
-                      return Container();
-                    } else {
-                      User user = User.fromJson(snapshot.data!.data);
-                      return CircleAvatar(
-                        backgroundColor: Colors.grey.shade200,
-                        radius: 24,
-                        backgroundImage: CachedNetworkImageProvider(
-                          'http://localhost:8080/image/${user.profileImage}',
-                          headers: {"Cookie": aToken},
-                        ),
-                      );
-                    }
+                    return CircleAvatar(
+                      backgroundColor: Colors.grey.shade200,
+                      radius: 24,
+                      backgroundImage: CachedNetworkImageProvider(
+                        'http://localhost:8080/image/${snapshot.data!.profileImage}',
+                        headers: {"Cookie": aToken},
+                      ),
+                    );
                   }
                 },
               );
@@ -378,4 +370,5 @@ class _MyHomeState extends State<MyHome> {
 37.5012,  
 37.501396, 126.912186
 37.500484, 126.91186
+37.491164, 126.922755
 */
