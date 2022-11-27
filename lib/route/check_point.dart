@@ -187,9 +187,8 @@ class _CheckPointState extends State<CheckPoint> {
                                   print('fail');
                                 } else {
                                   if (!mounted) return;
-                                  Provider.of<ControlCheckPoint>(context,
-                                          listen: false)
-                                      .delete(index);
+                                  Provider.of<ControlCheckPoint>(context, listen: false).delete(index);
+                                  markers.clear();
                                 }
                               },
                             )
