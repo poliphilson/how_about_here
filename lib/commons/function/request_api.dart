@@ -62,15 +62,15 @@ Future<HereJsonForm> sendHere(SendHereForm sendHereForm, String aToken) async {
 
 Map<String, String> _placemarkToMap(Placemark placemark) {
   Map<String, String> address = {
-    "name": placemark.name!,
-    "street": placemark.street!,  
-    "country": placemark.country!,
-    "admin_area": placemark.administrativeArea!,
-    "sub_area": placemark.subAdministrativeArea!,
-    "locality": placemark.locality!,
-    "sub_locality": placemark.subLocality!,
-    "thoroughfare": placemark.thoroughfare!,
-    "sub_thoroughfare": placemark.subThoroughfare!,
+    "name": placemark.name ?? '',
+    "street": placemark.street ?? '',  
+    "country": placemark.country ?? '',
+    "admin_area": placemark.administrativeArea ?? '',
+    "sub_area": placemark.subAdministrativeArea ?? '',
+    "locality": placemark.locality ?? '',
+    "sub_locality": placemark.subLocality ?? '',
+    "thoroughfare": placemark.thoroughfare ?? '',
+    "sub_thoroughfare": placemark.subThoroughfare ?? '',
   };
   return address;
 }
