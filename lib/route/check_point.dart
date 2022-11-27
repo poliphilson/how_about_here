@@ -205,6 +205,7 @@ class _CheckPointState extends State<CheckPoint> {
                                 final Placemark placemark = await getAddressFromLocation(latitude, longitude);
 
                                 if (!mounted) return;
+                                Provider.of<ControlHereLocation>(context, listen: false).setPlacemark(placemark);
                                 Provider.of<ControlHereLocation>(context, listen: false).setLatitude(latitude);
                                 Provider.of<ControlHereLocation>(context, listen: false).setLongitude(longitude);
                                 Provider.of<ControlHereLocation>(context, listen: false).setArea(getArea(placemark));

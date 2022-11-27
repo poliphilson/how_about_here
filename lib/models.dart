@@ -1,3 +1,4 @@
+import 'package:geocoding/geocoding.dart';
 import 'package:image_picker/image_picker.dart';
 
 class HereJsonForm {
@@ -19,6 +20,7 @@ class RequsetApiForm {
 class SendHereForm {
   late String contents;
   late bool isPrivated;
+  late Placemark address;
   late double x;
   late double y;
   late List<XFile?> images = [];

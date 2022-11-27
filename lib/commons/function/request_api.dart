@@ -1,3 +1,4 @@
+import 'package:geocoding/geocoding.dart';
 import 'package:here/models.dart';
 import 'package:http/http.dart' as http;
 import 'package:here/json_key.dart';
@@ -45,6 +46,7 @@ Future<HereJsonForm> sendHere(SendHereForm sendHereForm, String aToken) async {
   request.fields['is_privated'] = sendHereForm.isPrivated.toString();
   request.fields['x'] = sendHereForm.x.toString();
   request.fields['y'] = sendHereForm.y.toString();
+  request.fields['address'] = json.encode(_placemarkToMap(sendHereForm.address));
   for (int i = 0; i < sendHereForm.images.length; i++) {
     request.files.add(await http.MultipartFile.fromPath(
         'image[]', sendHereForm.images[i]!.path));
@@ -52,12 +54,25 @@ Future<HereJsonForm> sendHere(SendHereForm sendHereForm, String aToken) async {
 
   responseOfRequest = await request.send();
 
-  final String responseToString =
-      await responseOfRequest.stream.bytesToString();
-  final HereJsonForm responseForm =
-      _bindJson(responseToString, responseOfRequest.headers);
+  final String responseToString = await responseOfRequest.stream.bytesToString();
+  final HereJsonForm responseForm = _bindJson(responseToString, responseOfRequest.headers);
 
   return responseForm;
+}
+
+Map<String, String> _placemarkToMap(Placemark placemark) {
+  Map<String, String> address = {
+    "name": placemark.name!,
+    "street": placemark.street!,  
+    "country": placemark.country!,
+    "admin_area": placemark.administrativeArea!,
+    "sub_area": placemark.subAdministrativeArea!,
+    "locality": placemark.locality!,
+    "sub_locality": placemark.subLocality!,
+    "thoroughfare": placemark.thoroughfare!,
+    "sub_thoroughfare": placemark.subThoroughfare!,
+  };
+  return address;
 }
 
 HereJsonForm _bindJson(String jsonFormBody, Map<String, String> headers) {

@@ -1,45 +1,31 @@
 import 'package:geocoding/geocoding.dart';
 
 String getLocality(Placemark placemark) {
-  String locality = '';
-  int count = 0;
+  String locality = '???';
 
   if (placemark.name != '') {
     locality = placemark.name!;
-    count++;
+    return locality;
   } 
 
   if (placemark.street != '') {
-    locality = '$locality, ${placemark.street!}';
-    count++;
+    locality = placemark.street!;
+    return locality;
   } 
 
   if (placemark.subLocality != '') {
-    if (count == 2){
-      return locality;
-    }
-    locality = '$locality, ${placemark.subLocality!}';
-    count++;
+    locality = placemark.subLocality!;
+    return locality;
   } 
 
   if (placemark.locality != '') {
-    if (count == 2){
-      return locality;
-    }
-    locality = '$locality, ${placemark.locality!}';
-    count++;
+    locality = placemark.locality!;
+    return locality;
   } 
 
   if (placemark.administrativeArea != '') {
-    if (count == 2){
-      return locality;
-    }
-    locality = '$locality, ${placemark.administrativeArea!}';
-    count++;
-  }
-  
-  if (locality == '') {
-    return '???';
+    locality = placemark.administrativeArea!;
+    return locality;
   }
 
   return locality;

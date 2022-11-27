@@ -54,6 +54,7 @@ class _WriteState extends State<Write> {
     if (!mounted) return;
     Provider.of<ControlHereLocation>(context, listen: false).setLatitude(position.latitude);
     Provider.of<ControlHereLocation>(context, listen: false).setLongitude(position.longitude);
+    Provider.of<ControlHereLocation>(context, listen: false).setPlacemark(placemark);
     Provider.of<ControlHereLocation>(context, listen: false).setArea(getArea(placemark));
     Provider.of<ControlHereLocation>(context, listen: false).setLocality(getLocality(placemark));
     
@@ -116,6 +117,7 @@ class _WriteState extends State<Write> {
                                   final SendHereForm sendHereForm = SendHereForm();
                                   sendHereForm.contents = _contentsTextEditController.text;
                                   sendHereForm.isPrivated = private;
+                                  sendHereForm.address = Provider.of<ControlHereLocation>(context, listen: false).placemark;
                                   sendHereForm.x = Provider.of<ControlHereLocation>(context, listen: false).latitude;
                                   sendHereForm.y = Provider.of<ControlHereLocation>(context, listen: false).longitude;
                                   sendHereForm.images = images;
