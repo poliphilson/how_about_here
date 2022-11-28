@@ -105,8 +105,8 @@ class _MyHomeState extends State<MyHome> {
       switchLabelPosition: true,
       children: [
         SpeedDialChild(
-          child: const Icon(Icons.edit_note_outlined),
-          label: 'Edit',
+          child: const Icon(Icons.person_rounded),
+          label: 'Profile',
           onTap: () {
             Navigator.push(context, scale(const EditMyInfomation(), false));
           }
