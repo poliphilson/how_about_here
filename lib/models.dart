@@ -26,6 +26,11 @@ class SendHereForm {
   late List<XFile?> images = [];
 }
 
+class EditMyInfomationForm {
+  XFile? image;
+  String? bio;
+}
+
 class AccessToken {
   late String accessToken;
 }
@@ -61,6 +66,16 @@ class User {
 
   User.fromJson(Map json) {
     email = json['email'];
+    profileImage = json['profile_image'];
+    bio = json['bio'];
+  }
+}
+
+class EditUser {
+  late String profileImage;
+  late String bio;
+
+  EditUser.fromJson(Map json) {
     profileImage = json['profile_image'];
     bio = json['bio'];
   }

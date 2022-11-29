@@ -5,10 +5,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:here/commons/animation/top_to_bottom.dart';
 import 'package:here/commons/function/get_access_token.dart';
 import 'package:here/commons/function/get_my_information.dart';
+import 'package:here/commons/function/request_api.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/commons/widget/new_route_base.dart';
 import 'package:here/models.dart';
 import 'package:here/route/login.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditMyInfomation extends StatefulWidget {
   const EditMyInfomation({super.key});
@@ -19,6 +21,11 @@ class EditMyInfomation extends StatefulWidget {
 
 class _EditMyInfomationState extends State<EditMyInfomation> {
   final _storage = const FlutterSecureStorage();
+  final ImagePicker _picker = ImagePicker();
+
+  XFile? image; 
+  bool edit = false;
+  bool imageEdit = false;
 
   @override
   Widget build(BuildContext context) {
@@ -46,15 +53,24 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                 Expanded(
                   child: Container(),
                 ),
-                Container(
+                edit 
+                ? Container(
                   padding: const EdgeInsets.only(right: 10),
-                  child: IconButton(
-                    onPressed: () {
-                      
+                  child: TextButton(
+                    onPressed: () async {
+                      AccessToken aToken = await getAccessToken(_storage);
+                      EditMyInfomationForm editMyInfomationForm = EditMyInfomationForm();
+                      editMyInfomationForm.image = image;
+                      HereJsonForm hereJsonForm = await editMyInformation(editMyInfomationForm, aToken.accessToken);
+                      EditUser user = EditUser.fromJson(hereJsonForm.data);
+                      await _storage.write(key: 'profile_image', value: user.profileImage);
+                      if (!mounted) return;
+                      Navigator.pop(context);
                     },
-                    icon: const Icon(Icons.save, color: Colors.blue,),
+                    child: const Text("Save", style: TextStyle(color: Colors.blue),),
                   ),
                 )
+                : Container()
               ],
             ),
           ),
@@ -83,7 +99,12 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                         } else {
                           return FittedBox(
                             child:GestureDetector(
-                              child: CircleAvatar(
+                              child: imageEdit 
+                              ? CircleAvatar(
+                                backgroundColor: Colors.grey.shade200,
+                                backgroundImage: AssetImage(image!.path),
+                              )
+                              : CircleAvatar(
                                 backgroundColor: Colors.grey.shade200,
                                 backgroundImage: CachedNetworkImageProvider(
                                   'http://localhost:8080/image/${snapshotU.data!.profileImage}',
@@ -91,6 +112,13 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                                 ),
                               ),
                               onTap: () async {
+                                image = await _picker.pickImage(source: ImageSource.gallery);
+                                if (image != null) {
+                                  setState(() {
+                                    edit = true;
+                                    imageEdit = true;
+                                  });
+                                }
                               },
                             ),
                           );
@@ -123,8 +151,7 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
               },
             ),
           ),
-          SizedBox(
-            height: height / 20,
+          Expanded(
             child: FutureBuilder<User>(
               future: getMyInformation(_storage),
               builder: (context, snapshot) {
@@ -133,9 +160,7 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                 } else {
                   return Container(
                     padding: const EdgeInsets.only(left: 72, right: 72),
-                    child: FittedBox(
-                      child: Text(snapshot.data!.bio),
-                    ),
+                    child: Center(child: Text(snapshot.data!.bio)),
                   );
                 }
               },

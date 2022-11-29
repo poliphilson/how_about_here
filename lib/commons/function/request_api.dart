@@ -60,6 +60,30 @@ Future<HereJsonForm> sendHere(SendHereForm sendHereForm, String aToken) async {
   return responseForm;
 }
 
+Future<HereJsonForm> editMyInformation(EditMyInfomationForm editMyInfomationForm, String aToken) async {
+  late final http.StreamedResponse responseOfRequest;
+
+  Uri uri = Uri.parse('http://localhost:8080/user');
+  http.MultipartRequest request = http.MultipartRequest('PATCH', uri);
+  Map<String, String> headers = {"Cookie": aToken};
+  request.headers.addAll(headers);
+
+  if (editMyInfomationForm.bio != null) {
+    request.fields['bio'] = editMyInfomationForm.bio!;
+  }
+
+  if (editMyInfomationForm.image != null) {
+    request.files.add(await http.MultipartFile.fromPath('image', editMyInfomationForm.image!.path));
+  } 
+
+  responseOfRequest = await request.send();
+
+  final String responseToString = await responseOfRequest.stream.bytesToString();
+  final HereJsonForm responseForm = _bindJson(responseToString, responseOfRequest.headers);
+
+  return responseForm;
+}
+
 Map<String, String> _placemarkToMap(Placemark placemark) {
   Map<String, String> address = {
     "name": placemark.name ?? '',
