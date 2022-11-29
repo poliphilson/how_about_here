@@ -154,13 +154,32 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                     height: height / 20,
                   ),
                   SizedBox(
-                      height: height / 20,
-                      child: Container(
-                        padding: const EdgeInsets.only(left: 72, right: 72),
-                        child: FittedBox(
-                          child: Text(user.email),
-                        ),
-                      )),
+                    height: height / 20,
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 72, right: 72),
+                      child: FittedBox(
+                        child: Text(user.name),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: height / 20,
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 72, right: 72),
+                      child: FittedBox(
+                        child: Text(user.email),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: height / 20,
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 72, right: 72),
+                      child: FittedBox(
+                        child: Text(user.createdAt),
+                      ),
+                    ),
+                  ),
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.only(left: 72, right: 72),

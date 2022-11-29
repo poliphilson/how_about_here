@@ -175,7 +175,7 @@ class _LoginState extends State<Login> {
                                                       }
                                                     }
 
-                                                    SignIn user = SignIn.fromJson(signInJsonForm.data);
+                                                    ProfileImage user = ProfileImage.fromJson(signInJsonForm.data);
                                                     await _storage.write(key: 'profile_image', value: user.profileImage);
 
                                                     if (widget.main) {

@@ -75,10 +75,10 @@ class User {
   }
 }
 
-class SignIn {
+class ProfileImage {
   late String profileImage;
 
-  SignIn.fromJson(Map json) {
+  ProfileImage.fromJson(Map json) {
     profileImage = json['profile_image'];
   }
 }

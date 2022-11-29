@@ -154,7 +154,7 @@ class _MyHomeState extends State<MyHome> {
               return Container();
             } else {
               String aToken = snapshot.data!.accessToken;
-              return FutureBuilder<SignIn>(
+              return FutureBuilder<ProfileImage>(
                 future: getMyProfileImage(_storage),
                 builder: (context, snapshot) {
                   if (snapshot.hasData == false) {
