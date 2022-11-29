@@ -63,11 +63,23 @@ class User {
   late String email;
   late String profileImage;
   late String bio;
+  late String name;
+  late String createdAt;
 
   User.fromJson(Map json) {
     email = json['email'];
     profileImage = json['profile_image'];
     bio = json['bio'];
+    createdAt = json['created_at'];
+    name = json['name'];
+  }
+}
+
+class SignIn {
+  late String profileImage;
+
+  SignIn.fromJson(Map json) {
+    profileImage = json['profile_image'];
   }
 }
 

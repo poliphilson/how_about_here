@@ -175,10 +175,8 @@ class _LoginState extends State<Login> {
                                                       }
                                                     }
 
-                                                    User user = User.fromJson(signInJsonForm.data);
+                                                    SignIn user = SignIn.fromJson(signInJsonForm.data);
                                                     await _storage.write(key: 'profile_image', value: user.profileImage);
-                                                    await _storage.write(key: 'email', value: user.email);
-                                                    await _storage.write(key: 'bio', value: user.bio);
 
                                                     if (widget.main) {
                                                       RequsetApiForm getHeresApiForm = RequsetApiForm();

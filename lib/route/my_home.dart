@@ -10,7 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:here/commons/animation/scale.dart';
 import 'package:here/commons/animation/top_to_bottom.dart';
 import 'package:here/commons/function/get_access_token.dart';
-import 'package:here/commons/function/get_my_information.dart';
+import 'package:here/commons/function/get_my_profile_image.dart';
 import 'package:here/commons/function/get_my_location.dart';
 import 'package:here/commons/function/get_refresh_token.dart';
 import 'package:here/commons/function/request_api.dart';
@@ -53,7 +53,7 @@ class _MyHomeState extends State<MyHome> {
         Provider.of<ControlHereMarker>(context, listen: false).add(here, BitmapDescriptor.hueRed);
       }
     });
-
+    
     super.initState();
   }
 
@@ -154,8 +154,8 @@ class _MyHomeState extends State<MyHome> {
               return Container();
             } else {
               String aToken = snapshot.data!.accessToken;
-              return FutureBuilder<User>(
-                future: getMyInformation(_storage),
+              return FutureBuilder<SignIn>(
+                future: getMyProfileImage(_storage),
                 builder: (context, snapshot) {
                   if (snapshot.hasData == false) {
                     return const CustomProgressIndicator();
