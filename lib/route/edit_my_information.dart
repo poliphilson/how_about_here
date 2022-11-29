@@ -63,22 +63,22 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
             height: height / 3,
             child: FutureBuilder<AccessToken>(
               future: getAccessToken(_storage),
-              builder: (context, snapshot) {
-                if (snapshot.hasData == false) {
+              builder: (context, snapshotA) {
+                if (snapshotA.hasData == false) {
                   return const CustomProgressIndicator();
                 } else {
-                  if (snapshot.data!.accessToken == '') {
+                  if (snapshotA.data!.accessToken == '') {
                     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
                       Navigator.push(
                           context, topToBottom(const Login(main: false)));
                     });
                     return Container();
                   } else {
-                    String aToken = snapshot.data!.accessToken;
+                    String aToken = snapshotA.data!.accessToken;
                     return FutureBuilder<User>(
                       future: getMyInformation(_storage),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData == false) {
+                      builder: (context, snapshotU) {
+                        if (snapshotU.hasData == false) {
                           return const CustomProgressIndicator();
                         } else {
                           return FittedBox(
@@ -86,7 +86,7 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                               child: CircleAvatar(
                                 backgroundColor: Colors.grey.shade200,
                                 backgroundImage: CachedNetworkImageProvider(
-                                  'http://localhost:8080/image/${snapshot.data!.profileImage}',
+                                  'http://localhost:8080/image/${snapshotU.data!.profileImage}',
                                   headers: {"Cookie": aToken},
                                 ),
                               ),
@@ -123,11 +123,24 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
               },
             ),
           ),
-          const Expanded(
-            child: Center(
-              child: Text('Support soon:)'),
+          SizedBox(
+            height: height / 20,
+            child: FutureBuilder<User>(
+              future: getMyInformation(_storage),
+              builder: (context, snapshot) {
+                if (snapshot.hasData == false) {
+                  return const CustomProgressIndicator();
+                } else {
+                  return Container(
+                    padding: const EdgeInsets.only(left: 72, right: 72),
+                    child: FittedBox(
+                      child: Text(snapshot.data!.bio),
+                    ),
+                  );
+                }
+              },
             ),
-          )
+          ),
         ],
       ),
     );

@@ -57,10 +57,12 @@ class Here {
 class User {
   late String email;
   late String profileImage;
+  late String bio;
 
   User.fromJson(Map json) {
     email = json['email'];
     profileImage = json['profile_image'];
+    bio = json['bio'];
   }
 }
 
