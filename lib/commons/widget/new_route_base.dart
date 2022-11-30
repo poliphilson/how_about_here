@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class NewRouteBase extends StatelessWidget {
-  const NewRouteBase({required this.child, super.key});
+  const NewRouteBase({this.image, required this.child, super.key});
 
   final Widget child;
+  final DecorationImage? image;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +22,7 @@ class NewRouteBase extends StatelessWidget {
               height: height - 100,
               width: width - 40,
               decoration: BoxDecoration(
+                image: image,
                 color: Colors.white,
                 borderRadius: const BorderRadius.all(Radius.circular(30)),
                 boxShadow: [
