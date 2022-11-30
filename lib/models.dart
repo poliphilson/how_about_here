@@ -1,5 +1,6 @@
 import 'package:geocoding/geocoding.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class HereJsonForm {
   late int hereCode;
@@ -29,6 +30,7 @@ class SendHereForm {
 class EditMyInfomationForm {
   XFile? image;
   String? bio;
+  String? name;
 }
 
 class AccessToken {
@@ -40,17 +42,17 @@ class RefreshToken {
 }
 
 class Here {
-  late int hid;               
-	late String createdAt;   
-	late String contents;             
-	late Map<String, dynamic> location;   
-	late bool image;                
-	late bool video;               
-	late bool isPrivated;         
+  late int hid;
+  late String createdAt;
+  late String contents;
+  late Map<String, dynamic> location;
+  late bool image;
+  late bool video;
+  late bool isPrivated;
 
   Here.fromJson(Map json) {
     hid = json['hid'];
-    createdAt = json['created_at']; 
+    createdAt = json['created_at'];
     contents = json['contents'];
     location = json['location'];
     image = json['image'];
@@ -67,10 +69,15 @@ class User {
   late String createdAt;
 
   User.fromJson(Map json) {
+    final String parseDate = json['created_at'].split('.').first;
+    final DateTime date = DateTime.parse(parseDate);
+    final DateFormat dateFormat = DateFormat('MMMM dd yyyy');
+    final String prettyDate = dateFormat.format(date);
+    
     email = json['email'];
     profileImage = json['profile_image'];
     bio = json['bio'];
-    createdAt = json['created_at'];
+    createdAt = prettyDate;
     name = json['name'];
   }
 }
@@ -86,10 +93,12 @@ class ProfileImage {
 class EditUser {
   late String profileImage;
   late String bio;
+  late String name;
 
   EditUser.fromJson(Map json) {
     profileImage = json['profile_image'];
     bio = json['bio'];
+    name = json['name'];
   }
 }
 
@@ -101,7 +110,7 @@ class Point {
 
   Point.fromJson(Map json) {
     pid = json['pid'];
-    createdAt = json['created_at']; 
+    createdAt = json['created_at'];
     description = json['description'];
     location = json['location'];
   }

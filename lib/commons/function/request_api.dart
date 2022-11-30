@@ -76,6 +76,10 @@ Future<HereJsonForm> editMyInformation(EditMyInfomationForm editMyInfomationForm
     request.files.add(await http.MultipartFile.fromPath('image', editMyInfomationForm.image!.path));
   } 
 
+  if (editMyInfomationForm.name != null) {
+    request.fields['name'] = editMyInfomationForm.name!;
+  } 
+
   responseOfRequest = await request.send();
 
   final String responseToString = await responseOfRequest.stream.bytesToString();
