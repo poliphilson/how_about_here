@@ -8,6 +8,7 @@ import 'package:here/commons/function/get_my_profile_image.dart';
 import 'package:here/commons/function/request_api.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/commons/widget/new_route_base.dart';
+import 'package:here/main.dart';
 import 'package:here/models.dart';
 import 'package:here/route/login.dart';
 import 'package:image_picker/image_picker.dart';
@@ -32,7 +33,6 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
   String createdAt = "";
   String bio = "";
 
-  bool edit = false;
   bool imageEdit = false;
   bool nameEdit = false;
   bool bioEdit = false;
@@ -85,8 +85,7 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
               } else {
                 if (snapshotA.data!.accessToken == "") {
                   SchedulerBinding.instance.addPostFrameCallback((_) {
-                    Navigator.push(
-                        context, topToBottom(const Login(main: false)));
+                    navigatorKey.currentState?.push(topToBottom(const Login(main: false)));
                   });
                   return Container();
                 } else {
@@ -124,7 +123,7 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                                     color: Colors.red,
                                   ),
                                   onPressed: () {
-                                    Navigator.pop(context);
+                                    navigatorKey.currentState?.pop();
                                   },
                                 ),
                               ),
@@ -134,7 +133,7 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                               Container(
                                 padding: const EdgeInsets.only(right: 10),
                                 child: TextButton(
-                                  onPressed: edit
+                                  onPressed: (imageEdit || nameEdit || bioEdit)
                                       ? () async {
                                           AccessToken aToken =
                                               await getAccessToken(_storage);
@@ -175,7 +174,6 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                                           setState(() {
                                             nameEdit = false;
                                             bioEdit = false;
-                                            edit = false;
                                           });
                                         }
                                       : null,
@@ -183,7 +181,9 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                                     "Save",
                                     style: TextStyle(
                                         color:
-                                            edit ? Colors.blue : Colors.grey),
+                                            (imageEdit || nameEdit || bioEdit) 
+                                            ? Colors.blue 
+                                            : Colors.grey),
                                   ),
                                 ),
                               )
@@ -213,7 +213,6 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                                     source: ImageSource.gallery);
                                 if (image != null) {
                                   setState(() {
-                                    edit = true;
                                     imageEdit = true;
                                   });
                                 }
@@ -254,18 +253,6 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                                   ),
                                   onTap: () {
                                     _nameTextEditingController.text = name;
-                                    _nameTextEditingController.addListener(() {
-                                      if (name !=
-                                          _nameTextEditingController.text) {
-                                        setState(() {
-                                          edit = true;
-                                        });
-                                      } else {
-                                        setState(() {
-                                          edit = false;
-                                        });
-                                      }
-                                    });
 
                                     setState(() {
                                       nameEdit = true;
@@ -325,17 +312,6 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                             ),
                             onTap: () {
                               _bioTextEditingController.text = bio;
-                              _bioTextEditingController.addListener(() {
-                                if (bio != _bioTextEditingController.text) {
-                                  setState(() {
-                                    edit = true;
-                                  });
-                                } else {
-                                  setState(() {
-                                    edit = false;
-                                  });
-                                }
-                              });
 
                               setState(() {
                                 bioEdit = true;
