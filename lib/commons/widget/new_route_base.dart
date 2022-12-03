@@ -18,7 +18,7 @@ class NewRouteBase extends StatelessWidget {
         child: SingleChildScrollView(
           child: SafeArea(
             child: Container(
-              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              padding: const EdgeInsets.only(bottom: 10),
               height: height - 100,
               width: width - 40,
               decoration: BoxDecoration(

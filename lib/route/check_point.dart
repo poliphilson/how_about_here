@@ -78,7 +78,7 @@ class _CheckPointState extends State<CheckPoint> {
       child: Column(
         children: [
           SizedBox(
-            height: height / 20,
+            height: height / 15,
             child: Row(
               children: [
                 Container(
@@ -99,8 +99,7 @@ class _CheckPointState extends State<CheckPoint> {
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.only(top: 8),
+          SizedBox(
             height: height / 3,
             child: GoogleMap(
               markers: Set.from(markers),

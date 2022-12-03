@@ -94,7 +94,7 @@ class _RecycleBinState extends State<RecycleBin> with TickerProviderStateMixin{
       child: Column(
         children: [
           SizedBox(
-            height: height / 20,
+            height: height / 15,
             child: Row(
               children: [
                 Container(

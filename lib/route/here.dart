@@ -27,6 +27,7 @@ class _DetailHereState extends State<DetailHere> {
   final TextEditingController _contentsTextEditController =
       TextEditingController();
   late final SpecificHere detailHere;
+  late final Placemark placemark;
 
   String locality = 'Hmm...';
   String area = ' ';
@@ -45,7 +46,7 @@ class _DetailHereState extends State<DetailHere> {
 
   void _initHere() async {
     detailHere = await _getDetailHere();
-    Placemark placemark = Placemark(
+    placemark = Placemark(
       name: detailHere.address.name,
       street: detailHere.address.street,
       country: detailHere.address.country,
@@ -97,184 +98,239 @@ class _DetailHereState extends State<DetailHere> {
             return Container();
           } else {
             return NewRouteBase(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: height / 20,
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: IconButton(
-                              splashColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              icon: const Icon(
-                                Icons.cancel_rounded,
-                                color: Colors.red,
-                              ),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: height / 15,
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: IconButton(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            icon: const Icon(
+                              Icons.cancel_rounded,
+                              color: Colors.red,
                             ),
-                          ),
-                          Expanded(
-                            child: Container(),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: height / 20,
-                      child: Container(
-                        padding: const EdgeInsets.only(left: 26),
-                        child: const FittedBox(
-                          child: Text(
-                            'Here',
-                            style: TextStyle(
-                              color: Colors.grey,
-                            ),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
                           ),
                         ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: height / 20,
-                      child: Container(
-                        padding: const EdgeInsets.only(left: 26, right: 26),
-                        child: FittedBox(
-                          child: Text(locality),
+                        Expanded(
+                          child: Container(),
                         ),
-                      ),
+                      ],
                     ),
-                    SizedBox(
-                      height: height / 20,
-                      child: Container(
-                        padding: const EdgeInsets.only(left: 26, right: 26),
-                        child: FittedBox(
-                          child: Text(area),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.only(left: 10, right: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextButton(
-                            child: const Text('more', style: TextStyle(color: Colors.blue),),
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: height / 20,
-                      child: Container(
-                        padding: const EdgeInsets.only(left: 26, right: 26),
-                        child: const FittedBox(
-                          child: Text(
-                            'Now',
-                            style: TextStyle(
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.only(left: 26, right: 26),
-                      child: TextField(
-                        readOnly: true,
-                        controller: _contentsTextEditController,
-                        cursorColor: Colors.black,
-                        maxLines: null,
-                        decoration: const InputDecoration(
-                          hintText: 'What are you doing here?',
-                          enabledBorder: UnderlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.transparent)),
-                          focusedBorder: UnderlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.transparent)),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.only(left: 10, right: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          IconButton(
-                            icon: private
-                                ? const Icon(
-                                    Icons.lock,
-                                  )
-                                : const Icon(
-                                    Icons.lock_open,
-                                    color: Colors.grey,
-                                  ),
-                            onPressed: null,
-                          ),
-                        ],
-                      ),
-                    ),
-                    haveImages
-                        ? SizedBox(
+                          SizedBox(
                             height: height / 20,
                             child: Container(
-                              padding:
-                                  const EdgeInsets.only(left: 26, right: 26),
+                              padding: const EdgeInsets.only(left: 26),
                               child: const FittedBox(
                                 child: Text(
-                                  'Photos',
+                                  'Here',
                                   style: TextStyle(
                                     color: Colors.grey,
                                   ),
                                 ),
                               ),
                             ),
-                          )
-                        : Container(),
-                    ListView.separated(
-                      physics: const NeverScrollableScrollPhysics(),
-                      separatorBuilder: (context, index) => const SizedBox(
-                        height: 10,
-                      ),
-                      shrinkWrap: true,
-                      itemCount: images.length,
-                      itemBuilder: (context, index) {
-                        return SizedBox(
-                          height: height / 5,
-                          child: Container(
+                          ),
+                          SizedBox(
+                            height: height / 20,
+                            child: Container(
+                              padding:
+                                  const EdgeInsets.only(left: 26, right: 26),
+                              child: FittedBox(
+                                child: Text(locality),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: height / 20,
+                            child: Container(
+                              padding:
+                                  const EdgeInsets.only(left: 26, right: 26),
+                              child: FittedBox(
+                                child: Text(area),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.only(left: 10, right: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton(
+                                  child: const Text(
+                                    'more',
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
+                                  onPressed: () {
+                                    locationDialog(context, placemark);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: height / 20,
+                            child: Container(
+                              padding:
+                                  const EdgeInsets.only(left: 26, right: 26),
+                              child: const FittedBox(
+                                child: Text(
+                                  'Now',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
                             padding: const EdgeInsets.only(left: 26, right: 26),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(15),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
+                            child: TextField(
+                              readOnly: true,
+                              controller: _contentsTextEditController,
+                              cursorColor: Colors.black,
+                              maxLines: null,
+                              decoration: const InputDecoration(
+                                hintText: 'What are you doing here?',
+                                enabledBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent)),
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent)),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.only(left: 10, right: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                IconButton(
+                                  icon: private
+                                      ? const Icon(
+                                          Icons.lock,
+                                        )
+                                      : const Icon(
+                                          Icons.lock_open,
+                                          color: Colors.grey,
+                                        ),
+                                  onPressed: null,
+                                ),
+                              ],
+                            ),
+                          ),
+                          haveImages
+                              ? SizedBox(
+                                  height: height / 20,
+                                  child: Container(
+                                    padding: const EdgeInsets.only(
+                                        left: 26, right: 26),
+                                    child: const FittedBox(
+                                      child: Text(
+                                        'Photos',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Container(),
+                          ListView.separated(
+                            physics: const NeverScrollableScrollPhysics(),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(
+                              height: 10,
+                            ),
+                            shrinkWrap: true,
+                            itemCount: images.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                padding:
+                                    const EdgeInsets.only(left: 26, right: 26),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: Image(
                                     image: CachedNetworkImageProvider(
                                       'http://localhost:8080/image/${images[index]}',
                                       headers: {
                                         "Cookie": snapshot.data!.accessToken
                                       },
                                     ),
-                                    fit: BoxFit.cover,
                                   ),
                                 ),
-                              ),
-                            ),
+                              );
+                            },
                           ),
-                        );
-                      },
+                          const SizedBox(
+                            height: 8,
+                          )
+                        ],
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             );
           }
         }
+      },
+    );
+  }
+
+  void locationDialog(BuildContext context, Placemark placemark) {
+    final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Center(
+                child: Text('Location'),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minWidth: width,
+                          minHeight: height / 15,
+                        ),
+                        child: Column(
+                          children: [],
+                        )),
+                  ],
+                ),
+              ),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
       },
     );
   }

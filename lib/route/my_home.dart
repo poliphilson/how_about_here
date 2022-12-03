@@ -160,6 +160,9 @@ class _MyHomeState extends State<MyHome> {
                   if (snapshot.hasData == false) {
                     return const CustomProgressIndicator();
                   } else {
+                    if (snapshot.data == null || snapshot.data!.profileImage == "") {
+                      snapshot.data!.profileImage = defaultImage;
+                    }
                     return CircleAvatar(
                       backgroundColor: Colors.grey.shade200,
                       radius: 24,
@@ -371,4 +374,5 @@ class _MyHomeState extends State<MyHome> {
 37.501396, 126.912186
 37.500484, 126.91186
 37.491164, 126.922755
+37.500124, 126.913385
 */

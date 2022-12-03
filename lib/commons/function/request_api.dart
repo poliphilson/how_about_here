@@ -69,6 +69,9 @@ Future<HereJsonForm> editMyInformation(EditMyInfomationForm editMyInfomationForm
   request.headers.addAll(headers);
 
   if (editMyInfomationForm.bio != null) {
+    if (editMyInfomationForm.bio == '') {
+      editMyInfomationForm.bio = ' ';
+    }
     request.fields['bio'] = editMyInfomationForm.bio!;
   }
 

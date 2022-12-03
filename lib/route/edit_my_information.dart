@@ -8,6 +8,7 @@ import 'package:here/commons/function/get_my_profile_image.dart';
 import 'package:here/commons/function/request_api.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/commons/widget/new_route_base.dart';
+import 'package:here/constant.dart';
 import 'package:here/models.dart';
 import 'package:here/route/login.dart';
 import 'package:image_picker/image_picker.dart';
@@ -84,11 +85,15 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
               } else {
                 if (snapshotA.data!.accessToken == "") {
                   SchedulerBinding.instance.addPostFrameCallback((_) {
-                    Navigator.push(context, topToBottom(const Login(main: false)));
+                    Navigator.push(
+                        context, topToBottom(const Login(main: false)));
                   });
                   return Container();
                 } else {
                   String aToken = snapshotA.data!.accessToken;
+                  if (snapshot.data == null || snapshot.data!.profileImage == "") {
+                      snapshot.data!.profileImage = defaultImage;
+                    }
                   return NewRouteBase(
                     image: imageEdit
                         ? DecorationImage(
@@ -111,7 +116,7 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                     child: Column(
                       children: [
                         SizedBox(
-                          height: height / 20,
+                          height: height / 15,
                           child: Row(
                             children: [
                               Container(
@@ -171,6 +176,7 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                                           bio = editUser.bio;
 
                                           setState(() {
+                                            imageEdit = false;
                                             nameEdit = false;
                                             bioEdit = false;
                                           });
@@ -180,142 +186,164 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                                     "Save",
                                     style: TextStyle(
                                         color:
-                                            (imageEdit || nameEdit || bioEdit) 
-                                            ? Colors.blue 
-                                            : Colors.grey),
+                                            (imageEdit || nameEdit || bioEdit)
+                                                ? Colors.blue
+                                                : Colors.grey),
                                   ),
                                 ),
                               )
                             ],
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.only(top: 8),
-                          height: height / 3,
-                          child: FittedBox(
-                            child: GestureDetector(
-                              child: imageEdit
-                                  ? CircleAvatar(
-                                      backgroundColor: Colors.grey.shade200,
-                                      backgroundImage: AssetImage(image!.path),
-                                    )
-                                  : CircleAvatar(
-                                      backgroundColor: Colors.grey.shade200,
-                                      backgroundImage:
-                                          CachedNetworkImageProvider(
-                                        'http://localhost:8080/image/${snapshot.data!.profileImage}',
-                                        headers: {"Cookie": aToken},
-                                      ),
-                                    ),
-                              onTap: () async {
-                                image = await _picker.pickImage(
-                                    source: ImageSource.gallery);
-                                if (image != null) {
-                                  setState(() {
-                                    imageEdit = true;
-                                  });
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: height / 20,
-                        ),
-                        nameEdit
-                            ? TextField(
-                                controller: _nameTextEditingController,
-                                autofocus: true,
-                                textAlign: TextAlign.center,
-                                cursorColor: Colors.black,
-                                maxLines: 1,
-                                style: const TextStyle(
-                                    fontSize: 35, fontWeight: FontWeight.w200),
-                                decoration: const InputDecoration(
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.all(0),
-                                    border: InputBorder.none),
-                              )
-                            : SizedBox(
-                                height: height / 20,
-                                child: GestureDetector(
-                                  behavior: HitTestBehavior.translucent,
-                                  child: Container(
-                                    padding: const EdgeInsets.only(
-                                        left: 26, right: 26),
-                                    child: Text(
-                                      name,
-                                      style: const TextStyle(
-                                          fontSize: 35,
-                                          fontWeight: FontWeight.w200),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  height: height / 3,
+                                  child: FittedBox(
+                                    child: GestureDetector(
+                                      child: imageEdit
+                                          ? CircleAvatar(
+                                              backgroundColor:
+                                                  Colors.grey.shade200,
+                                              backgroundImage:
+                                                  AssetImage(image!.path),
+                                            )
+                                          : CircleAvatar(
+                                              backgroundColor:
+                                                  Colors.grey.shade200,
+                                              backgroundImage:
+                                                  CachedNetworkImageProvider(
+                                                'http://localhost:8080/image/${snapshot.data!.profileImage}',
+                                                headers: {"Cookie": aToken},
+                                              ),
+                                            ),
+                                      onTap: () async {
+                                        image = await _picker.pickImage(
+                                            source: ImageSource.gallery);
+                                        if (image != null) {
+                                          setState(() {
+                                            imageEdit = true;
+                                          });
+                                        }
+                                      },
                                     ),
                                   ),
-                                  onTap: () {
-                                    _nameTextEditingController.text = name;
-
-                                    setState(() {
-                                      nameEdit = true;
-                                    });
-                                  },
                                 ),
-                              ),
-                        SizedBox(
-                          height: height / 20,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.only(left: 26, right: 26),
-                          child: Text(
-                            email,
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w200),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.only(left: 26, right: 26),
-                          child: Text(
-                            "From $createdAt",
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w200),
-                          ),
-                        ),
-                        Expanded(
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.translucent,
-                            child: Container(
-                              padding:
-                                  const EdgeInsets.only(left: 26, right: 26),
-                              child: Center(
-                                child: bioEdit
+                                SizedBox(
+                                  height: height / 20,
+                                ),
+                                nameEdit
                                     ? TextField(
+                                        controller: _nameTextEditingController,
                                         autofocus: true,
                                         textAlign: TextAlign.center,
-                                        controller: _bioTextEditingController,
                                         cursorColor: Colors.black,
-                                        maxLines: null,
+                                        maxLines: 1,
                                         style: const TextStyle(
-                                            fontSize: 20,
+                                            fontSize: 35,
                                             fontWeight: FontWeight.w200),
                                         decoration: const InputDecoration(
                                             isDense: true,
                                             contentPadding: EdgeInsets.all(0),
                                             border: InputBorder.none),
                                       )
-                                    : Text(
-                                        bio,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w200),
-                                      ),
-                              ),
-                            ),
-                            onTap: () {
-                              _bioTextEditingController.text = bio;
+                                    : SizedBox(
+                                        height: height / 20,
+                                        child: GestureDetector(
+                                          behavior: HitTestBehavior.translucent,
+                                          child: Container(
+                                            padding: const EdgeInsets.only(
+                                                left: 26, right: 26),
+                                            child: Text(
+                                              name,
+                                              style: const TextStyle(
+                                                  fontSize: 35,
+                                                  fontWeight: FontWeight.w200),
+                                            ),
+                                          ),
+                                          onTap: () {
+                                            _nameTextEditingController.text =
+                                                name;
 
-                              setState(() {
-                                bioEdit = true;
-                              });
-                            },
+                                            setState(() {
+                                              nameEdit = true;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                SizedBox(
+                                  height: height / 20,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 26, right: 26),
+                                  child: Text(
+                                    email,
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w200),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 26, right: 26),
+                                  child: Text(
+                                    "From $createdAt",
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w200),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: height / 20,
+                                ),
+                                GestureDetector(
+                                  behavior: HitTestBehavior.translucent,
+                                  child: Container(
+                                    padding: const EdgeInsets.only(
+                                        left: 26, right: 26),
+                                    child: Center(
+                                      child: bioEdit
+                                          ? TextField(
+                                              autofocus: true,
+                                              textAlign: TextAlign.center,
+                                              controller:
+                                                  _bioTextEditingController,
+                                              cursorColor: Colors.black,
+                                              maxLines: null,
+                                              style: const TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w200),
+                                              decoration: const InputDecoration(
+                                                  isDense: true,
+                                                  contentPadding:
+                                                      EdgeInsets.all(0),
+                                                  border: InputBorder.none),
+                                            )
+                                          : Text(
+                                              bio,
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w200),
+                                            ),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    _bioTextEditingController.text = bio;
+
+                                    setState(() {
+                                      bioEdit = true;
+                                    });
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ],
