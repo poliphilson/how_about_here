@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:here/commons/animation/scale.dart';
+import 'package:here/main.dart';
 import 'package:here/models.dart';
+import 'package:here/route/here.dart';
 
 class ControlHereMarker extends ChangeNotifier {
   final List<Marker> _markers = [];
@@ -11,7 +14,10 @@ class ControlHereMarker extends ChangeNotifier {
     _markers.add(Marker(
       markerId: MarkerId(here.hid.toString()),
       position: LatLng(here.location['x'], here.location['y']),
-      icon: BitmapDescriptor.defaultMarkerWithHue(color)
+      icon: BitmapDescriptor.defaultMarkerWithHue(color),
+      onTap: () {
+        navigatorKey.currentState?.push(scale(DetailHere(here: here), false));
+      },
     ));
     notifyListeners();
   }

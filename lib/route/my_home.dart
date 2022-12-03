@@ -19,6 +19,7 @@ import 'package:here/commons/provider/control_here_location.dart';
 import 'package:here/commons/provider/control_here_marker.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/constant.dart';
+import 'package:here/main.dart';
 import 'package:here/models.dart';
 import 'package:here/route/check_point.dart';
 import 'package:here/route/edit_my_information.dart';
@@ -108,21 +109,21 @@ class _MyHomeState extends State<MyHome> {
           child: const Icon(Icons.person_rounded),
           label: 'Profile',
           onTap: () {
-            Navigator.push(context, scale(const EditMyInfomation(), false));
+            navigatorKey.currentState?.push(scale(const EditMyInfomation(), false));
           }
         ),
         SpeedDialChild(
           child: const Icon(Icons.location_on_outlined),
           label: 'Check point',
           onTap: () {
-            Navigator.push(context, scale(const CheckPoint(main: true,), false));
+            navigatorKey.currentState?.push(scale(const CheckPoint(main: true,), false));
           },
         ),
         SpeedDialChild(
           child: const Icon(Icons.recycling_outlined),
           label: 'Recycle bin',
           onTap: () {
-            Navigator.push(context, scale(RecycleBin(date: datePickerDate,), false));
+            navigatorKey.currentState?.push(scale(RecycleBin(date: datePickerDate,), false));
           },
         ),
         SpeedDialChild(
@@ -137,7 +138,7 @@ class _MyHomeState extends State<MyHome> {
             await requestApi(requestApiForm);
             await signOut(_storage);
             if (!mounted) return;
-            Navigator.push(context, topToBottom(const Login(main: false)));
+            navigatorKey.currentState?.push(topToBottom(const Login(main: false)));
           },
         ),
       ],
@@ -149,7 +150,7 @@ class _MyHomeState extends State<MyHome> {
           } else {
             if (snapshot.data!.accessToken == '') {
               SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-                Navigator.push(context, topToBottom(const Login(main: false)));
+                navigatorKey.currentState?.push(topToBottom(const Login(main: false)));
               });
               return Container();
             } else {
@@ -272,7 +273,7 @@ class _MyHomeState extends State<MyHome> {
           child: const Icon(Icons.edit_location_outlined),
           label: 'Write',
           onTap: () {
-            Navigator.push(context, scale(const Write(), false)).then((_) {
+            navigatorKey.currentState?.push(scale(const Write(), false)).then((_) {
               Provider.of<ControlHereLocation>(context, listen: false).setLocality('Hmm...');
               Provider.of<ControlHereLocation>(context, listen: false).setArea(' ');
             });
@@ -343,7 +344,7 @@ class _MyHomeState extends State<MyHome> {
                       print('fail');
                     } else {
                       if (!mounted) return;
-                      Navigator.pop(context);
+                      navigatorKey.currentState?.pop();
                       Provider.of<ControlHereMarker>(context, listen: false).myLocation(latitude, longitude, BitmapDescriptor.hueCyan);
                     }
                   },
@@ -351,7 +352,7 @@ class _MyHomeState extends State<MyHome> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    navigatorKey.currentState?.pop();
                   },
                   child: const Text('Cancel', style: TextStyle(color: Colors.red))
                 ),

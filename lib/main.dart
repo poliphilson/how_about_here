@@ -17,7 +17,10 @@ import 'package:here/route/login.dart';
 import 'package:here/commons/provider/progress_indicator_status.dart';
 import 'package:intl/intl.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() {
+
   runApp(
     MultiProvider(
       providers: [
@@ -27,6 +30,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => ControlHereLocation()),
       ],
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Here',
         home: Container(
           decoration: const BoxDecoration(
@@ -67,7 +71,7 @@ class _MainState extends State<Main> {
           } else {
             if (snapshot.data!.accessToken == "") {
               SchedulerBinding.instance.addPostFrameCallback((_) {
-                Navigator.push(context, topToBottom(const Login(main: true)));
+                navigatorKey.currentState?.push(topToBottom(const Login(main: true)));
               });
               return Container();
             } else {
@@ -86,8 +90,7 @@ class _MainState extends State<Main> {
                   } else {
                     if (snapshot.data!.hereCode != statusOK) {
                       SchedulerBinding.instance.addPostFrameCallback((_) {
-                        Navigator.push(
-                            context, topToBottom(const Login(main: true)));
+                        navigatorKey.currentState?.push(topToBottom(const Login(main: true)));
                       });
                       return Container();
                     } else {
@@ -97,8 +100,7 @@ class _MainState extends State<Main> {
                             .map((item) => item as Map<String, dynamic>)
                             .toList();
                       SchedulerBinding.instance.addPostFrameCallback((_) {
-                        Navigator.pushReplacement(
-                            context, scale(MyHome(heres: heres), true));
+                        navigatorKey.currentState?.push(scale(MyHome(heres: heres), true));
                       });
                       return Container();
                     }

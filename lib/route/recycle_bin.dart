@@ -6,6 +6,7 @@ import 'package:here/commons/function/request_api.dart';
 import 'package:here/commons/provider/control_here_marker.dart';
 import 'package:here/commons/widget/new_route_base.dart';
 import 'package:here/constant.dart';
+import 'package:here/main.dart';
 import 'package:here/models.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -105,7 +106,7 @@ class _RecycleBinState extends State<RecycleBin> with TickerProviderStateMixin{
                       color: Colors.red,
                     ),
                     onPressed: () {
-                      Navigator.pop(context);
+                      navigatorKey.currentState?.pop();
                     },
                   ),
                 ),

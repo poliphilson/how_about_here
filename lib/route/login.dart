@@ -5,6 +5,7 @@ import 'package:here/commons/function/request_api.dart';
 import 'package:here/commons/provider/progress_indicator_status.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/constant.dart';
+import 'package:here/main.dart';
 import 'package:here/models.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:here/route/my_home.dart';
@@ -248,9 +249,9 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> _goToMyHome(BuildContext context, [List<Map<String, dynamic>>? heres]) async {
-    Navigator.pop(context);
+    navigatorKey.currentState?.pop();
     if (widget.main) {
-      Navigator.pushReplacement(context, scale(MyHome(heres: heres!), true));
+      navigatorKey.currentState?.push(scale(MyHome(heres: heres!), true));
     }
   }
 }

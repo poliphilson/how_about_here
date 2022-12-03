@@ -18,6 +18,7 @@ import 'package:here/commons/provider/progress_indicator_status.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/commons/widget/new_route_base.dart';
 import 'package:here/constant.dart';
+import 'package:here/main.dart';
 import 'package:here/models.dart';
 import 'package:here/route/check_point.dart';
 import 'package:image_picker/image_picker.dart';
@@ -87,7 +88,7 @@ class _WriteState extends State<Write> {
                           onPressed: progressIndicator.status
                               ? null
                               : () {
-                                  Navigator.pop(context);
+                                  navigatorKey.currentState?.pop();
                                 },
                         ),
                       ),
@@ -125,11 +126,12 @@ class _WriteState extends State<Write> {
                                   HereJsonForm hereJsonForm =  await sendHere(sendHereForm, aToken.accessToken);
                                   if (hereJsonForm.hereCode == statusOK) {
                                     Here here = Here.fromJson(hereJsonForm.data);
+                                    
 
                                     if (!mounted) return;
                                     Provider.of<ControlHereMarker>(context, listen: false).add(here, BitmapDescriptor.hueRed);
                                     progressIndicator.off();
-                                    Navigator.pop(context);
+                                    navigatorKey.currentState?.pop();
                                   } else {
                                     print('Fail to send here');
                                     progressIndicator.off();
@@ -186,7 +188,7 @@ class _WriteState extends State<Write> {
                   IconButton(
                     icon: const Icon(Icons.location_on_outlined, color: Colors.blue,),
                     onPressed: () {
-                      Navigator.push(context, rightToLeft(const CheckPoint(main: false,)));
+                      navigatorKey.currentState?.push(rightToLeft(const CheckPoint(main: false,)));
                     },
                   ),
                   IconButton(
