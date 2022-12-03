@@ -68,6 +68,7 @@ class _DetailHereState extends State<DetailHere> {
   }
 
   List<String> dynamicToListString(dynamic value) {
+    value ??= [];
     return List<String>.from(value as List).toList();
   }
 
