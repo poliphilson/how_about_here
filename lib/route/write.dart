@@ -18,7 +18,6 @@ import 'package:here/commons/provider/progress_indicator_status.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/commons/widget/new_route_base.dart';
 import 'package:here/constant.dart';
-import 'package:here/main.dart';
 import 'package:here/models.dart';
 import 'package:here/route/check_point.dart';
 import 'package:image_picker/image_picker.dart';
@@ -88,7 +87,7 @@ class _WriteState extends State<Write> {
                           onPressed: progressIndicator.status
                               ? null
                               : () {
-                                  navigatorKey.currentState?.pop();
+                                  Navigator.pop(context);
                                 },
                         ),
                       ),
@@ -131,7 +130,7 @@ class _WriteState extends State<Write> {
                                     if (!mounted) return;
                                     Provider.of<ControlHereMarker>(context, listen: false).add(here, BitmapDescriptor.hueRed);
                                     progressIndicator.off();
-                                    navigatorKey.currentState?.pop();
+                                    Navigator.pop(context);
                                   } else {
                                     print('Fail to send here');
                                     progressIndicator.off();
@@ -188,7 +187,7 @@ class _WriteState extends State<Write> {
                   IconButton(
                     icon: const Icon(Icons.location_on_outlined, color: Colors.blue,),
                     onPressed: () {
-                      navigatorKey.currentState?.push(rightToLeft(const CheckPoint(main: false,)));
+                      Navigator.push(context, rightToLeft(const CheckPoint(main: false,)));
                     },
                   ),
                   IconButton(

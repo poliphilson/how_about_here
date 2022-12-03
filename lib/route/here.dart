@@ -10,7 +10,6 @@ import 'package:here/commons/function/get_locality.dart';
 import 'package:here/commons/function/request_api.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/commons/widget/new_route_base.dart';
-import 'package:here/main.dart';
 import 'package:here/models.dart';
 import 'package:here/route/login.dart';
 
@@ -92,8 +91,7 @@ class _DetailHereState extends State<DetailHere> {
         } else {
           if (snapshot.data!.accessToken == "") {
             SchedulerBinding.instance.addPostFrameCallback((_) {
-              navigatorKey.currentState
-                  ?.push(topToBottom(const Login(main: false)));
+              Navigator.push(context, topToBottom(const Login(main: false)));
             });
             return Container();
           } else {
@@ -116,7 +114,7 @@ class _DetailHereState extends State<DetailHere> {
                                 color: Colors.red,
                               ),
                               onPressed: () {
-                                navigatorKey.currentState?.pop();
+                                Navigator.pop(context);
                               },
                             ),
                           ),
@@ -163,11 +161,8 @@ class _DetailHereState extends State<DetailHere> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          IconButton(
-                            icon: const Icon(
-                              Icons.location_on_outlined,
-                              color: Colors.blue,
-                            ),
+                          TextButton(
+                            child: const Text('more', style: TextStyle(color: Colors.blue),),
                             onPressed: () {},
                           ),
                         ],

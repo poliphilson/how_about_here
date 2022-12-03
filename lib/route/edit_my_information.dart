@@ -8,7 +8,6 @@ import 'package:here/commons/function/get_my_profile_image.dart';
 import 'package:here/commons/function/request_api.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/commons/widget/new_route_base.dart';
-import 'package:here/main.dart';
 import 'package:here/models.dart';
 import 'package:here/route/login.dart';
 import 'package:image_picker/image_picker.dart';
@@ -85,7 +84,7 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
               } else {
                 if (snapshotA.data!.accessToken == "") {
                   SchedulerBinding.instance.addPostFrameCallback((_) {
-                    navigatorKey.currentState?.push(topToBottom(const Login(main: false)));
+                    Navigator.push(context, topToBottom(const Login(main: false)));
                   });
                   return Container();
                 } else {
@@ -123,7 +122,7 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                                     color: Colors.red,
                                   ),
                                   onPressed: () {
-                                    navigatorKey.currentState?.pop();
+                                    Navigator.pop(context);
                                   },
                                 ),
                               ),

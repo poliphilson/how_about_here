@@ -71,7 +71,7 @@ class _MainState extends State<Main> {
           } else {
             if (snapshot.data!.accessToken == "") {
               SchedulerBinding.instance.addPostFrameCallback((_) {
-                navigatorKey.currentState?.push(topToBottom(const Login(main: true)));
+                Navigator.push(context, topToBottom(const Login(main: true)));
               });
               return Container();
             } else {
@@ -90,7 +90,7 @@ class _MainState extends State<Main> {
                   } else {
                     if (snapshot.data!.hereCode != statusOK) {
                       SchedulerBinding.instance.addPostFrameCallback((_) {
-                        navigatorKey.currentState?.push(topToBottom(const Login(main: true)));
+                        Navigator.push(context, topToBottom(const Login(main: true)));
                       });
                       return Container();
                     } else {
@@ -100,7 +100,7 @@ class _MainState extends State<Main> {
                             .map((item) => item as Map<String, dynamic>)
                             .toList();
                       SchedulerBinding.instance.addPostFrameCallback((_) {
-                        navigatorKey.currentState?.push(scale(MyHome(heres: heres), true));
+                        Navigator.pushReplacement(context, scale(MyHome(heres: heres), true));
                       });
                       return Container();
                     }

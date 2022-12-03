@@ -13,7 +13,6 @@ import 'package:here/commons/provider/control_check_point.dart';
 import 'package:here/commons/provider/control_here_location.dart';
 import 'package:here/commons/widget/new_route_base.dart';
 import 'package:here/constant.dart';
-import 'package:here/main.dart';
 import 'package:here/models.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -92,7 +91,7 @@ class _CheckPointState extends State<CheckPoint> {
                           )
                         : const Icon(Icons.arrow_back),
                     onPressed: () {
-                      navigatorKey.currentState?.pop();
+                      Navigator.pop(context);
                       Provider.of<ControlCheckPoint>(context, listen: false).clear();
                     },
                   ),
@@ -210,7 +209,7 @@ class _CheckPointState extends State<CheckPoint> {
                                 Provider.of<ControlHereLocation>(context, listen: false).setArea(getArea(placemark));
                                 Provider.of<ControlHereLocation>(context, listen: false).setLocality(getLocality(placemark));
 
-                                navigatorKey.currentState?.pop();
+                                Navigator.pop(context);
                                 Provider.of<ControlCheckPoint>(context, listen: false).clear();
                               },
                             ),
@@ -377,7 +376,7 @@ class _CheckPointState extends State<CheckPoint> {
                         edit = false;
                       });
                     } else {
-                      navigatorKey.currentState?.pop();
+                      Navigator.pop(context);
                     }
                   },
                   child: edit
