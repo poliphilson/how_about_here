@@ -14,3 +14,6 @@ const double containerCorner = 30;
 const String setCookie = 'set-cookie';
 const String accessToken = 'access_token';
 const String refreshToken = 'refresh_token';
+
+//default value
+const String defaultImage = 'user_default.png';
