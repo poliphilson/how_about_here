@@ -43,8 +43,8 @@ class RefreshToken {
 
 class Here {
   late int hid;
-  late String createdAt;
-  late String contents;
+  late String createdAt = "";
+  late String contents = "";
   late Map<String, dynamic> location;
   late bool image;
   late bool video;
@@ -58,6 +58,44 @@ class Here {
     image = json['image'];
     video = json['video'];
     isPrivated = json['is_privated'];
+  }
+}
+
+class SpecificHere {
+  late Here here;
+  late Address address;
+  late dynamic images;
+  late dynamic videos;
+
+  SpecificHere.fromJson(Map json) {
+    here = Here.fromJson(json['here']);
+    address = Address.fromJson(json['address']);
+    images = json['images'];
+    videos = json['videos'];
+  }
+}
+
+class Address {
+  late String name = "";
+  late String street = "";
+  late String country = "";
+  late String adminArea = "";
+  late String subArea = "";
+  late String locality = "Hmm...";
+  late String subLocality = "";
+  late String thoroughfare = "";
+  late String subThoroughfare = "";
+
+  Address.fromJson(Map json) {
+    name = json['name'];
+    street = json['street'];
+    country = json['country'];
+    adminArea = json['admin_area'];
+    subArea = json['sub_area'];
+    locality = json['locality'];
+    subLocality = json['sub_locality'];
+    thoroughfare = json['thoroughfare'];
+    subThoroughfare = json['sub_thoroughfare'];
   }
 }
 
