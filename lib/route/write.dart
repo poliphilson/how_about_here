@@ -105,13 +105,8 @@ class _WriteState extends State<Write> {
                               padding: const EdgeInsets.only(right: 8),
                               child: const CustomProgressIndicator(),
                             )
-                          : IconButton(
-                              splashColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              icon: const Icon(
-                                Icons.send,
-                                color: Colors.blue,
-                              ),
+                          : TextButton(
+                              child: const Text('Send'),
                               onPressed: () async {
                                 progressIndicator.on();
 

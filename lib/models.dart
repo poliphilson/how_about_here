@@ -62,16 +62,20 @@ class Here {
 }
 
 class SpecificHere {
+  late int hereCode;
+  late int httpCode;
   late Here here;
   late Address address;
   late dynamic images;
   late dynamic videos;
 
-  SpecificHere.fromJson(Map json) {
-    here = Here.fromJson(json['here']);
-    address = Address.fromJson(json['address']);
-    images = json['images'];
-    videos = json['videos'];
+  SpecificHere.fromJson(HereJsonForm hereJsonForm) {
+    hereCode = hereJsonForm.hereCode;
+    httpCode = hereJsonForm.httpCode;
+    here = Here.fromJson(hereJsonForm.data['here']);
+    address = Address.fromJson(hereJsonForm.data['address']);
+    images = hereJsonForm.data['images'];
+    videos = hereJsonForm.data['videos'];
   }
 }
 

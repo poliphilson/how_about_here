@@ -8,10 +8,13 @@ import 'package:here/commons/function/get_access_token.dart';
 import 'package:here/commons/function/get_area.dart';
 import 'package:here/commons/function/get_locality.dart';
 import 'package:here/commons/function/request_api.dart';
+import 'package:here/commons/provider/control_here_marker.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/commons/widget/new_route_base.dart';
+import 'package:here/constant.dart';
 import 'package:here/models.dart';
 import 'package:here/route/login.dart';
+import 'package:provider/provider.dart';
 
 class DetailHere extends StatefulWidget {
   const DetailHere({required this.here, super.key});
@@ -34,6 +37,7 @@ class _DetailHereState extends State<DetailHere> {
   bool private = false;
   bool haveImages = false;
   List<String> images = [];
+  bool readOnly = true;
 
   @override
   void initState() {
@@ -46,26 +50,31 @@ class _DetailHereState extends State<DetailHere> {
 
   void _initHere() async {
     detailHere = await _getDetailHere();
-    placemark = Placemark(
-      name: detailHere.address.name,
-      street: detailHere.address.street,
-      country: detailHere.address.country,
-      administrativeArea: detailHere.address.adminArea,
-      subAdministrativeArea: detailHere.address.subArea,
-      locality: detailHere.address.locality,
-      subLocality: detailHere.address.subLocality,
-      thoroughfare: detailHere.address.thoroughfare,
-      subThoroughfare: detailHere.address.subThoroughfare,
-    );
+    if (detailHere.hereCode != statusOK) {
+      if (!mounted) return;
+      Navigator.push(context, topToBottom(const Login(main: false)));
+    } else {
+      placemark = Placemark(
+        name: detailHere.address.name,
+        street: detailHere.address.street,
+        country: detailHere.address.country,
+        administrativeArea: detailHere.address.adminArea,
+        subAdministrativeArea: detailHere.address.subArea,
+        locality: detailHere.address.locality,
+        subLocality: detailHere.address.subLocality,
+        thoroughfare: detailHere.address.thoroughfare,
+        subThoroughfare: detailHere.address.subThoroughfare,
+      );
 
-    setState(() {
-      locality = getLocality(placemark);
-      area = getArea(placemark);
-      _contentsTextEditController.text = detailHere.here.contents;
-      private = detailHere.here.isPrivated;
-      haveImages = detailHere.here.image;
-      images.addAll(dynamicToListString(detailHere.images));
-    });
+      setState(() {
+        locality = getLocality(placemark);
+        area = getArea(placemark);
+        _contentsTextEditController.text = detailHere.here.contents;
+        private = detailHere.here.isPrivated;
+        haveImages = detailHere.here.image;
+        images.addAll(dynamicToListString(detailHere.images));
+      });
+    }
   }
 
   List<String> dynamicToListString(dynamic value) {
@@ -120,6 +129,44 @@ class _DetailHereState extends State<DetailHere> {
                         ),
                         Expanded(
                           child: Container(),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Row(
+                            children: [
+                              TextButton(
+                                child: const Text('Edit'),
+                                onPressed: () {},
+                              ),
+                              TextButton(
+                                child: const Text(
+                                  'Delete',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                onPressed: () async {
+                                  RequsetApiForm requsetApiForm =
+                                      RequsetApiForm();
+                                  requsetApiForm.method = 'DELETE';
+                                  requsetApiForm.headers = {
+                                    'Cookie': snapshot.data!.accessToken
+                                  };
+                                  requsetApiForm.url =
+                                      'http://localhost:8080/here/${detailHere.here.hid}';
+                                  HereJsonForm hereJsonForm =
+                                      await requestApi(requsetApiForm);
+                                  if (hereJsonForm.hereCode == statusOK) {
+                                    if (!mounted) return;
+                                    Provider.of<ControlHereMarker>(context,
+                                            listen: false)
+                                        .delete(detailHere.here.hid);
+                                    Navigator.pop(context);
+                                  } else {
+                                    print('fail');
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -198,7 +245,7 @@ class _DetailHereState extends State<DetailHere> {
                           Container(
                             padding: const EdgeInsets.only(left: 26, right: 26),
                             child: TextField(
-                              readOnly: true,
+                              readOnly: readOnly,
                               controller: _contentsTextEditController,
                               cursorColor: Colors.black,
                               maxLines: null,
@@ -308,13 +355,166 @@ class _DetailHereState extends State<DetailHere> {
                 child: Column(
                   children: [
                     ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minWidth: width,
-                          minHeight: height / 15,
-                        ),
-                        child: Column(
-                          children: [],
-                        )),
+                      constraints: BoxConstraints(
+                        minWidth: width,
+                        minHeight: height / 15,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Theme(
+                            data: Theme.of(context)
+                                .copyWith(dividerColor: Colors.transparent),
+                            child: ExpansionTile(
+                              iconColor: Colors.black,
+                              textColor: Colors.black,
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Icon(Icons.public_rounded),
+                                  Text('Country')
+                                ],
+                              ),
+                              children: [
+                                ListTile(
+                                  title: Center(
+                                    child: placemark.country!.isEmpty
+                                        ? const Text('???')
+                                        : Text(placemark.country!),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Theme(
+                            data: Theme.of(context)
+                                .copyWith(dividerColor: Colors.transparent),
+                            child: ExpansionTile(
+                              iconColor: Colors.black,
+                              textColor: Colors.black,
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Icon(Icons.emoji_transportation_rounded),
+                                  Text('Area')
+                                ],
+                              ),
+                              children: [
+                                ListTile(
+                                  title: Center(
+                                    child: Column(
+                                      children: [
+                                        placemark.administrativeArea!.isEmpty
+                                            ? const Text('???')
+                                            : Text(
+                                                placemark.administrativeArea!),
+                                        placemark.subAdministrativeArea!.isEmpty
+                                            ? Container()
+                                            : Text(
+                                                '${placemark.subAdministrativeArea!}(Sub)'),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Theme(
+                            data: Theme.of(context)
+                                .copyWith(dividerColor: Colors.transparent),
+                            child: ExpansionTile(
+                              iconColor: Colors.black,
+                              textColor: Colors.black,
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Icon(Icons.holiday_village_rounded),
+                                  Text('Locality')
+                                ],
+                              ),
+                              children: [
+                                ListTile(
+                                  title: Center(
+                                    child: Column(
+                                      children: [
+                                        placemark.locality!.isEmpty
+                                            ? const Text('???')
+                                            : Text(placemark.locality!),
+                                        placemark.subLocality!.isEmpty
+                                            ? Container()
+                                            : Text(
+                                                '${placemark.subLocality!}(Sub)'),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Theme(
+                            data: Theme.of(context)
+                                .copyWith(dividerColor: Colors.transparent),
+                            child: ExpansionTile(
+                              iconColor: Colors.black,
+                              textColor: Colors.black,
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Icon(Icons.directions_rounded),
+                                  Text('Street')
+                                ],
+                              ),
+                              children: [
+                                ListTile(
+                                  title: Center(
+                                    child: placemark.street!.isEmpty
+                                    ? const Text('???')
+                                    : Text(placemark.street!),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Theme(
+                            data: Theme.of(context)
+                                .copyWith(dividerColor: Colors.transparent),
+                            child: ExpansionTile(
+                              iconColor: Colors.black,
+                              textColor: Colors.black,
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Icon(Icons.route_rounded),
+                                  Text('Thoroughfare')
+                                ],
+                              ),
+                              children: [
+                                ListTile(
+                                  title: Center(
+                                    child: Column(
+                                      children: [
+                                        placemark.thoroughfare!.isEmpty
+                                        ? const Text('???')
+                                        : Text(placemark.thoroughfare!),
+                                        placemark.subAdministrativeArea!.isEmpty
+                                        ? Container()
+                                        : Text(
+                                            '${placemark.subThoroughfare!}(Sub)'),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -342,7 +542,7 @@ class _DetailHereState extends State<DetailHere> {
     requestApiForm.headers = {'Cookie': aToken.accessToken};
     requestApiForm.url = 'http://localhost:8080/here/${widget.here.hid}';
     HereJsonForm hereJsonForm = await requestApi(requestApiForm);
-    SpecificHere specificHere = SpecificHere.fromJson(hereJsonForm.data);
+    SpecificHere specificHere = SpecificHere.fromJson(hereJsonForm);
     return specificHere;
   }
 }
