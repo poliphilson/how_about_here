@@ -197,6 +197,7 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                         ),
                         Expanded(
                           child: SingleChildScrollView(
+                            physics:  const ClampingScrollPhysics(),
                             child: Column(
                               children: [
                                 SizedBox(

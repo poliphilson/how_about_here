@@ -158,6 +158,7 @@ class _WriteState extends State<Write> {
           ),
           Expanded(
             child: SingleChildScrollView(
+              physics:  const ClampingScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -367,7 +368,7 @@ class _WriteState extends State<Write> {
                                           images.removeAt(index);
                                         });
                                       },
-                                    )
+                                    ),
                                   ],
                                 );
                               },

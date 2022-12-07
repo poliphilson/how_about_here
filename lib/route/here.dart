@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -14,6 +16,7 @@ import 'package:here/commons/widget/new_route_base.dart';
 import 'package:here/constant.dart';
 import 'package:here/models.dart';
 import 'package:here/route/login.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class DetailHere extends StatefulWidget {
@@ -29,6 +32,7 @@ class _DetailHereState extends State<DetailHere> {
   final _storage = const FlutterSecureStorage();
   final TextEditingController _contentsTextEditController =
       TextEditingController();
+  final ImagePicker _picker = ImagePicker();
   late final SpecificHere detailHere;
   late final Placemark placemark;
 
@@ -37,7 +41,8 @@ class _DetailHereState extends State<DetailHere> {
   bool private = false;
   bool haveImages = false;
   List<String> images = [];
-  bool readOnly = true;
+  List<XFile?> newImages = [];
+  bool edit = false;
 
   @override
   void initState() {
@@ -134,37 +139,74 @@ class _DetailHereState extends State<DetailHere> {
                           padding: const EdgeInsets.only(right: 10),
                           child: Row(
                             children: [
-                              TextButton(
-                                child: const Text('Edit'),
-                                onPressed: () {},
-                              ),
-                              TextButton(
-                                child: const Text(
-                                  'Delete',
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                                onPressed: () async {
-                                  RequsetApiForm requsetApiForm =
-                                      RequsetApiForm();
-                                  requsetApiForm.method = 'DELETE';
-                                  requsetApiForm.headers = {
-                                    'Cookie': snapshot.data!.accessToken
-                                  };
-                                  requsetApiForm.url =
-                                      'http://localhost:8080/here/${detailHere.here.hid}';
-                                  HereJsonForm hereJsonForm =
-                                      await requestApi(requsetApiForm);
-                                  if (hereJsonForm.hereCode == statusOK) {
-                                    if (!mounted) return;
-                                    Provider.of<ControlHereMarker>(context,
-                                            listen: false)
-                                        .delete(detailHere.here.hid);
-                                    Navigator.pop(context);
-                                  } else {
-                                    print('fail');
-                                  }
-                                },
-                              ),
+                              edit
+                                  ? TextButton(
+                                      child: const Text(
+                                        'Cancel',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          newImages.clear();
+                                          edit = false;
+                                        });
+                                      },
+                                    )
+                                  : TextButton(
+                                      child: const Text('Edit'),
+                                      onPressed: () {
+                                        setState(() {
+                                          edit = true;
+                                        });
+                                      },
+                                    ),
+                              edit
+                                  ? TextButton(
+                                      child: const Text('Save'),
+                                      onPressed: () async {
+                                        EditHereForm editHereForm = EditHereForm();
+                                        editHereForm.contents = _contentsTextEditController.text;
+                                        editHereForm.isPrivated = private;
+                                        editHereForm.images = images;
+                                        editHereForm.newImages = newImages;
+                                        HereJsonForm hereJsonForm = await editHere(editHereForm, detailHere.here.hid, snapshot.data!.accessToken);
+                                        if (hereJsonForm.hereCode != statusOK) {
+                                          print('fail');
+                                        } else {
+                                          setState(() {
+                                          edit = false;
+                                        });
+                                        }
+                                      },
+                                    )
+                                  : TextButton(
+                                      child: const Text(
+                                        'Delete',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                      onPressed: () async {
+                                        RequsetApiForm requsetApiForm =
+                                            RequsetApiForm();
+                                        requsetApiForm.method = 'DELETE';
+                                        requsetApiForm.headers = {
+                                          'Cookie': snapshot.data!.accessToken
+                                        };
+                                        requsetApiForm.url =
+                                            'http://localhost:8080/here/${detailHere.here.hid}';
+                                        HereJsonForm hereJsonForm =
+                                            await requestApi(requsetApiForm);
+                                        if (hereJsonForm.hereCode == statusOK) {
+                                          if (!mounted) return;
+                                          Provider.of<ControlHereMarker>(
+                                                  context,
+                                                  listen: false)
+                                              .delete(detailHere.here.hid);
+                                          Navigator.pop(context);
+                                        } else {
+                                          print('fail');
+                                        }
+                                      },
+                                    ),
                             ],
                           ),
                         ),
@@ -173,6 +215,7 @@ class _DetailHereState extends State<DetailHere> {
                   ),
                   Expanded(
                     child: SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -217,7 +260,7 @@ class _DetailHereState extends State<DetailHere> {
                               children: [
                                 TextButton(
                                   child: const Text(
-                                    'more',
+                                    'More',
                                     style: TextStyle(color: Colors.blue),
                                   ),
                                   onPressed: () {
@@ -245,7 +288,7 @@ class _DetailHereState extends State<DetailHere> {
                           Container(
                             padding: const EdgeInsets.only(left: 26, right: 26),
                             child: TextField(
-                              readOnly: readOnly,
+                              readOnly: !edit,
                               controller: _contentsTextEditController,
                               cursorColor: Colors.black,
                               maxLines: null,
@@ -274,12 +317,16 @@ class _DetailHereState extends State<DetailHere> {
                                           Icons.lock_open,
                                           color: Colors.grey,
                                         ),
-                                  onPressed: null,
+                                  onPressed: edit ? () {
+                                    setState(() {
+                                      private = !private;
+                                    });
+                                  } : null,
                                 ),
                               ],
                             ),
                           ),
-                          haveImages
+                          images.isNotEmpty || edit || newImages.isNotEmpty
                               ? SizedBox(
                                   height: height / 20,
                                   child: Container(
@@ -308,23 +355,112 @@ class _DetailHereState extends State<DetailHere> {
                               return Container(
                                 padding:
                                     const EdgeInsets.only(left: 26, right: 26),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  child: Image(
-                                    image: CachedNetworkImageProvider(
-                                      'http://localhost:8080/image/${images[index]}',
-                                      headers: {
-                                        "Cookie": snapshot.data!.accessToken
-                                      },
+                                child: Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(15),
+                                      child: Image(
+                                        image: CachedNetworkImageProvider(
+                                          'http://localhost:8080/image/${images[index]}',
+                                          headers: {
+                                            "Cookie": snapshot.data!.accessToken
+                                          },
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    edit
+                                        ? IconButton(
+                                            icon: const Icon(
+                                              Icons.close,
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                images.removeAt(index);
+                                              });
+                                            },
+                                          )
+                                        : Container()
+                                  ],
                                 ),
                               );
                             },
                           ),
+                          Container(
+                            padding: const EdgeInsets.only(left: 26, right: 26),
+                            child: Center(
+                              child: Padding(
+                                padding: images.isEmpty 
+                                ? EdgeInsets.zero
+                                : const EdgeInsets.only(top: 10),
+                                child: ListView.separated(
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(
+                                    height: 10,
+                                  ),
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: newImages.length,
+                                  itemBuilder: (context, index) {
+                                    return Stack(
+                                      alignment: Alignment.topRight,
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(15),
+                                          child: Image.file(
+                                            File(newImages[index]!.path),
+                                          ),
+                                        ),
+                                        edit
+                                            ? IconButton(
+                                                icon: const Icon(
+                                                  Icons.close,
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    newImages.removeAt(index);
+                                                  });
+                                                },
+                                              )
+                                            : Container(),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                          edit
+                              ? SizedBox(
+                                  height: height / 5,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () async {
+                                          List<XFile?> newImagesList =
+                                              await _picker.pickMultiImage();
+                                          if (newImagesList.isNotEmpty) {
+                                            setState(() {
+                                              newImages.addAll(newImagesList);
+                                            });
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            shape: const CircleBorder(),
+                                            padding: const EdgeInsets.all(15),
+                                            backgroundColor: Colors.black),
+                                        child: const Icon(
+                                            Icons.add_photo_alternate_outlined),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : Container(),
                           const SizedBox(
                             height: 8,
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -472,8 +608,8 @@ class _DetailHereState extends State<DetailHere> {
                                 ListTile(
                                   title: Center(
                                     child: placemark.street!.isEmpty
-                                    ? const Text('???')
-                                    : Text(placemark.street!),
+                                        ? const Text('???')
+                                        : Text(placemark.street!),
                                   ),
                                 )
                               ],
@@ -499,12 +635,12 @@ class _DetailHereState extends State<DetailHere> {
                                     child: Column(
                                       children: [
                                         placemark.thoroughfare!.isEmpty
-                                        ? const Text('???')
-                                        : Text(placemark.thoroughfare!),
+                                            ? const Text('???')
+                                            : Text(placemark.thoroughfare!),
                                         placemark.subAdministrativeArea!.isEmpty
-                                        ? Container()
-                                        : Text(
-                                            '${placemark.subThoroughfare!}(Sub)'),
+                                            ? Container()
+                                            : Text(
+                                                '${placemark.subThoroughfare!}(Sub)'),
                                       ],
                                     ),
                                   ),

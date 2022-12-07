@@ -91,6 +91,33 @@ Future<HereJsonForm> editMyInformation(EditMyInfomationForm editMyInfomationForm
   return responseForm;
 }
 
+Future<HereJsonForm> editHere(EditHereForm editHere, int hid, String aToken) async {
+  late final http.StreamedResponse responseOfRequest;
+
+  Uri uri = Uri.parse('http://localhost:8080/here/$hid');
+  http.MultipartRequest request = http.MultipartRequest('PATCH', uri);
+  Map<String, String> headers = {"Cookie": aToken};
+  request.headers.addAll(headers);
+
+  request.fields['contents'] = editHere.contents;
+  request.fields['is_privated'] = editHere.isPrivated.toString();
+  for (int i = 0; i < editHere.images.length; i++) {
+    request.files.add(http.MultipartFile.fromString('images[]', editHere.images[i]));
+  }
+  
+  for (int i = 0; i < editHere.newImages.length; i++) {
+    request.files.add(await http.MultipartFile.fromPath(
+        'new_image[]', editHere.newImages[i]!.path));
+  }
+
+  responseOfRequest = await request.send();
+
+  final String responseToString = await responseOfRequest.stream.bytesToString();
+  final HereJsonForm responseForm = _bindJson(responseToString, responseOfRequest.headers);
+
+  return responseForm;
+}
+
 Map<String, String> _placemarkToMap(Placemark placemark) {
   Map<String, String> address = {
     "name": placemark.name ?? '',

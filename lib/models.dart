@@ -144,6 +144,13 @@ class EditUser {
   }
 }
 
+class EditHereForm {
+  late String contents;
+  late bool isPrivated;
+  late List<String> images = [];
+  late List<XFile?> newImages = [];
+}
+
 class Point {
   late int pid;
   late String createdAt;
