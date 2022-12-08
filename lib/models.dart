@@ -72,10 +72,12 @@ class SpecificHere {
   SpecificHere.fromJson(HereJsonForm hereJsonForm) {
     hereCode = hereJsonForm.hereCode;
     httpCode = hereJsonForm.httpCode;
-    here = Here.fromJson(hereJsonForm.data['here']);
-    address = Address.fromJson(hereJsonForm.data['address']);
-    images = hereJsonForm.data['images'];
-    videos = hereJsonForm.data['videos'];
+    if (hereJsonForm.data != null) {
+      here = Here.fromJson(hereJsonForm.data['here']);
+      address = Address.fromJson(hereJsonForm.data['address']);
+      images = hereJsonForm.data['images'];
+      videos = hereJsonForm.data['videos'];
+    }
   }
 }
 

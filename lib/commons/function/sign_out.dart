@@ -10,7 +10,7 @@ Future<void> signOut(FlutterSecureStorage storage) async {
 
   requsetApiForm.method = 'POST';
   requsetApiForm.headers = {"Cookie": rToken.refreshToken};
-  requsetApiForm.url = 'http://localhost:8080/signout';
+  requsetApiForm.url = '$server/signout';
 
   await storage.delete(key: accessToken);
   await storage.delete(key: refreshToken);

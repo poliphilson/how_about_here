@@ -108,7 +108,7 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                                 Colors.black.withOpacity(0.3),
                                 BlendMode.dstATop),
                             image: CachedNetworkImageProvider(
-                              'http://localhost:8080/image/${snapshot.data!.profileImage}',
+                              '$server/image/${snapshot.data!.profileImage}',
                               headers: {"Cookie": aToken},
                             ),
                             fit: BoxFit.cover,
@@ -216,7 +216,7 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                                                   Colors.grey.shade200,
                                               backgroundImage:
                                                   CachedNetworkImageProvider(
-                                                'http://localhost:8080/image/${snapshot.data!.profileImage}',
+                                                '$server/image/${snapshot.data!.profileImage}',
                                                 headers: {"Cookie": aToken},
                                               ),
                                             ),
@@ -364,7 +364,7 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
     RequsetApiForm requestApiForm = RequsetApiForm();
     requestApiForm.method = 'GET';
     requestApiForm.headers = {'Cookie': aToken.accessToken};
-    requestApiForm.url = 'http://localhost:8080/user';
+    requestApiForm.url = '$server/user';
     HereJsonForm hereJsonForm = await requestApi(requestApiForm);
     return hereJsonForm;
   }

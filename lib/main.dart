@@ -20,7 +20,7 @@ import 'package:intl/intl.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
-
+  
   runApp(
     MultiProvider(
       providers: [
@@ -79,7 +79,7 @@ class _MainState extends State<Main> {
               final String today = dateFormat.format(DateTime.now());
               requestApiForm.method = 'GET';
               requestApiForm.headers = {"Cookie": snapshot.data!.accessToken};
-              requestApiForm.url = 'http://localhost:8080/here?date=$today';
+              requestApiForm.url = '$server/here?date=$today';
               return FutureBuilder<HereJsonForm>(
                 future: requestApi(requestApiForm),
                 builder: (_, snapshot) {

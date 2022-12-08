@@ -1,4 +1,5 @@
 import 'package:geocoding/geocoding.dart';
+import 'package:here/constant.dart';
 import 'package:here/models.dart';
 import 'package:http/http.dart' as http;
 import 'package:here/json_key.dart';
@@ -37,7 +38,7 @@ Future<HereJsonForm> requestApi(RequsetApiForm requestApiForm) async {
 Future<HereJsonForm> sendHere(SendHereForm sendHereForm, String aToken) async {
   late final http.StreamedResponse responseOfRequest;
 
-  Uri uri = Uri.parse('http://localhost:8080/here');
+  Uri uri = Uri.parse('$server/here');
   http.MultipartRequest request = http.MultipartRequest('POST', uri);
   Map<String, String> headers = {"Cookie": aToken};
 
@@ -63,7 +64,7 @@ Future<HereJsonForm> sendHere(SendHereForm sendHereForm, String aToken) async {
 Future<HereJsonForm> editMyInformation(EditMyInfomationForm editMyInfomationForm, String aToken) async {
   late final http.StreamedResponse responseOfRequest;
 
-  Uri uri = Uri.parse('http://localhost:8080/user');
+  Uri uri = Uri.parse('$server/user');
   http.MultipartRequest request = http.MultipartRequest('PATCH', uri);
   Map<String, String> headers = {"Cookie": aToken};
   request.headers.addAll(headers);
@@ -94,7 +95,7 @@ Future<HereJsonForm> editMyInformation(EditMyInfomationForm editMyInfomationForm
 Future<HereJsonForm> editHere(EditHereForm editHere, int hid, String aToken) async {
   late final http.StreamedResponse responseOfRequest;
 
-  Uri uri = Uri.parse('http://localhost:8080/here/$hid');
+  Uri uri = Uri.parse('$server/here/$hid');
   http.MultipartRequest request = http.MultipartRequest('PATCH', uri);
   Map<String, String> headers = {"Cookie": aToken};
   request.headers.addAll(headers);

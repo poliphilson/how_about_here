@@ -133,7 +133,7 @@ class _MyHomeState extends State<MyHome> {
             RefreshToken rToken = await getRefreshToken(_storage);
             requestApiForm.method = 'POST';
             requestApiForm.headers = {'Cookie': rToken.refreshToken};
-            requestApiForm.url = 'http://localhost:8080/signout';
+            requestApiForm.url = '$server/signout';
             await requestApi(requestApiForm);
             await signOut(_storage);
             if (!mounted) return;
@@ -167,7 +167,7 @@ class _MyHomeState extends State<MyHome> {
                       backgroundColor: Colors.grey.shade200,
                       radius: 24,
                       backgroundImage: CachedNetworkImageProvider(
-                        'http://localhost:8080/image/${snapshot.data!.profileImage}',
+                        '$server/image/${snapshot.data!.profileImage}',
                         headers: {"Cookie": aToken},
                       ),
                     );
@@ -237,7 +237,7 @@ class _MyHomeState extends State<MyHome> {
               final AccessToken aToken = await getAccessToken(_storage);
 
               getHeresApiForm.method = 'GET';
-              getHeresApiForm.url = 'http://localhost:8080/here?date=$date';
+              getHeresApiForm.url = '$server/here?date=$date';
               getHeresApiForm.headers = {"Cookie": aToken.accessToken};
 
               HereJsonForm getHeresJsonForm = await requestApi(getHeresApiForm);
@@ -335,7 +335,7 @@ class _MyHomeState extends State<MyHome> {
                       'Cookie': aToken.accessToken,
                       "Content-Type": "application/json"
                     };
-                    requestApiForm.url = 'http://localhost:8080/point';
+                    requestApiForm.url = '$server/point';
                     requestApiForm.body = {
                       'x': latitude,
                       'y': longitude,

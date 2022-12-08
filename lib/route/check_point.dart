@@ -178,7 +178,7 @@ class _CheckPointState extends State<CheckPoint> {
                                 };
                                 if (!mounted) return;
                                 requsetApiForm.url =
-                                    'http://localhost:8080/point/${Provider.of<ControlCheckPoint>(context, listen: false).points[index].pid}';
+                                    '$server/point/${Provider.of<ControlCheckPoint>(context, listen: false).points[index].pid}';
                                 HereJsonForm hereJsonForm =
                                     await requestApi(requsetApiForm);
                                 if (hereJsonForm.hereCode != statusOK) {
@@ -267,7 +267,7 @@ class _CheckPointState extends State<CheckPoint> {
     requsetApiForm.method = 'GET';
     requsetApiForm.headers = {"Cookie": aToken.accessToken};
     requsetApiForm.url =
-        'http://localhost:8080/point?limit=$limit&offset=$offset';
+        '$server/point?limit=$limit&offset=$offset';
     HereJsonForm hereJsonForm = await requestApi(requsetApiForm);
     hereJsonForm.data ??= [];
     List<Map<String, dynamic>> points = (hereJsonForm.data as List)
@@ -342,7 +342,7 @@ class _CheckPointState extends State<CheckPoint> {
                         'Cookie': aToken.accessToken,
                         "Content-Type": "application/json"
                       };
-                      requestApiForm.url = 'http://localhost:8080/point/$pid';
+                      requestApiForm.url = '$server/point/$pid';
                       requestApiForm.body = {
                         "description": _descriptionTextEditController.text
                       };

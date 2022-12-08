@@ -159,7 +159,7 @@ class _LoginState extends State<Login> {
                                                   signInApiForm.headers = {
                                                     "Content-Type": "application/json"
                                                   };
-                                                  signInApiForm.url = 'http://localhost:8080/signin';
+                                                  signInApiForm.url = '$server/signin';
                                                   signInApiForm.body = body;
     
                                                   HereJsonForm signInJsonForm = await requestApi(signInApiForm);
@@ -184,7 +184,7 @@ class _LoginState extends State<Login> {
                                                       final String today = dateFormat.format(DateTime.now());
                                                       AccessToken aToken = await getAccessToken(_storage);
                                                       getHeresApiForm.method = 'GET';
-                                                      getHeresApiForm.url = 'http://localhost:8080/here?date=$today';
+                                                      getHeresApiForm.url = '$server/here?date=$today';
                                                       getHeresApiForm.headers = {
                                                         "Cookie": aToken.accessToken
                                                       };

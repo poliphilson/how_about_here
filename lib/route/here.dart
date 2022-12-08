@@ -57,6 +57,7 @@ class _DetailHereState extends State<DetailHere> {
     detailHere = await _getDetailHere();
     if (detailHere.hereCode != statusOK) {
       if (!mounted) return;
+      Navigator.pop(context);
       Navigator.push(context, topToBottom(const Login(main: false)));
     } else {
       placemark = Placemark(
@@ -147,6 +148,9 @@ class _DetailHereState extends State<DetailHere> {
                                       ),
                                       onPressed: () {
                                         setState(() {
+                                          _contentsTextEditController.text = detailHere.here.contents;
+                                          private = detailHere.here.isPrivated;
+                                          images = dynamicToListString(detailHere.images);
                                           newImages.clear();
                                           edit = false;
                                         });
@@ -192,7 +196,7 @@ class _DetailHereState extends State<DetailHere> {
                                           'Cookie': snapshot.data!.accessToken
                                         };
                                         requsetApiForm.url =
-                                            'http://localhost:8080/here/${detailHere.here.hid}';
+                                            '$server/here/${detailHere.here.hid}';
                                         HereJsonForm hereJsonForm =
                                             await requestApi(requsetApiForm);
                                         if (hereJsonForm.hereCode == statusOK) {
@@ -362,7 +366,7 @@ class _DetailHereState extends State<DetailHere> {
                                       borderRadius: BorderRadius.circular(15),
                                       child: Image(
                                         image: CachedNetworkImageProvider(
-                                          'http://localhost:8080/image/${images[index]}',
+                                          '$server/image/${images[index]}',
                                           headers: {
                                             "Cookie": snapshot.data!.accessToken
                                           },
@@ -388,11 +392,11 @@ class _DetailHereState extends State<DetailHere> {
                           ),
                           Container(
                             padding: const EdgeInsets.only(left: 26, right: 26),
-                            child: Center(
-                              child: Padding(
-                                padding: images.isEmpty 
-                                ? EdgeInsets.zero
-                                : const EdgeInsets.only(top: 10),
+                            child: Padding(
+                              padding: images.isEmpty || newImages.isEmpty
+                              ? EdgeInsets.zero
+                              : const EdgeInsets.only(top: 10),
+                              child: Center(
                                 child: ListView.separated(
                                   separatorBuilder: (context, index) =>
                                       const SizedBox(
@@ -676,7 +680,7 @@ class _DetailHereState extends State<DetailHere> {
     RequsetApiForm requestApiForm = RequsetApiForm();
     requestApiForm.method = 'GET';
     requestApiForm.headers = {'Cookie': aToken.accessToken};
-    requestApiForm.url = 'http://localhost:8080/here/${widget.here.hid}';
+    requestApiForm.url = '$server/here/${widget.here.hid}';
     HereJsonForm hereJsonForm = await requestApi(requestApiForm);
     SpecificHere specificHere = SpecificHere.fromJson(hereJsonForm);
     return specificHere;

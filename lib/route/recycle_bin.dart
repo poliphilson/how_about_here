@@ -150,7 +150,7 @@ class _RecycleBinState extends State<RecycleBin> with TickerProviderStateMixin{
                               RequsetApiForm requestApiForm = RequsetApiForm();
                               requestApiForm.method = 'PATCH';
                               requestApiForm.headers = {'Cookie': aToken.accessToken};
-                              requestApiForm.url = 'http://localhost:8080/trash/here/${hereList[index].hid}';
+                              requestApiForm.url = '$server/trash/here/${hereList[index].hid}';
                               HereJsonForm hereJsonForm = await requestApi(requestApiForm);
                               if (hereJsonForm.hereCode != statusOK) {
                                 print('fail');
@@ -176,7 +176,7 @@ class _RecycleBinState extends State<RecycleBin> with TickerProviderStateMixin{
                               RequsetApiForm requestApiForm = RequsetApiForm();
                               requestApiForm.method = 'DELETE';
                               requestApiForm.headers = {'Cookie': aToken.accessToken};
-                              requestApiForm.url = 'http://localhost:8080/trash/here/${hereList[index].hid}';
+                              requestApiForm.url = '$server/trash/here/${hereList[index].hid}';
                               HereJsonForm hereJsonForm = await requestApi(requestApiForm);
                               if (hereJsonForm.hereCode != statusOK) {
                                 print('fail');
@@ -214,7 +214,7 @@ class _RecycleBinState extends State<RecycleBin> with TickerProviderStateMixin{
                               RequsetApiForm requestApiForm = RequsetApiForm();
                               requestApiForm.method = 'PATCH';
                               requestApiForm.headers = {'Cookie': aToken.accessToken};
-                              requestApiForm.url = 'http://localhost:8080/trash/point/${pointList[index].pid}';
+                              requestApiForm.url = '$server/trash/point/${pointList[index].pid}';
                               HereJsonForm hereJsonForm = await requestApi(requestApiForm);
                               if (hereJsonForm.hereCode != statusOK) {
                                 print('fail');
@@ -232,7 +232,7 @@ class _RecycleBinState extends State<RecycleBin> with TickerProviderStateMixin{
                               RequsetApiForm requestApiForm = RequsetApiForm();
                               requestApiForm.method = 'DELETE';
                               requestApiForm.headers = {'Cookie': aToken.accessToken};
-                              requestApiForm.url = 'http://localhost:8080/trash/point/${pointList[index].pid}';
+                              requestApiForm.url = '$server/trash/point/${pointList[index].pid}';
                               HereJsonForm hereJsonForm = await requestApi(requestApiForm);
                               if (hereJsonForm.hereCode != statusOK) {
                                 print('fail');
@@ -264,7 +264,7 @@ class _RecycleBinState extends State<RecycleBin> with TickerProviderStateMixin{
     requsetApiForm.method = 'GET';
     requsetApiForm.headers = {"Cookie": aToken.accessToken};
     requsetApiForm.url =
-        'http://localhost:8080/trash/here?limit=$limit&offset=$hereOffset';
+        '$server/trash/here?limit=$limit&offset=$hereOffset';
     HereJsonForm hereJsonForm = await requestApi(requsetApiForm);
     hereJsonForm.data ??= [];
     List<Map<String, dynamic>> heres = (hereJsonForm.data as List)
@@ -284,7 +284,7 @@ class _RecycleBinState extends State<RecycleBin> with TickerProviderStateMixin{
     RequsetApiForm requsetApiForm = RequsetApiForm();
     requsetApiForm.method = 'GET';
     requsetApiForm.headers = {"Cookie": aToken.accessToken};
-    requsetApiForm.url = 'http://localhost:8080/trash/point?limit=$limit&offset=$pointOffset';
+    requsetApiForm.url = '$server/trash/point?limit=$limit&offset=$pointOffset';
     HereJsonForm hereJsonForm = await requestApi(requsetApiForm);
     hereJsonForm.data ??= [];
     List<Map<String, dynamic>> points = (hereJsonForm.data as List)

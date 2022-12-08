@@ -1,3 +1,6 @@
+//Server
+const String server = 'http://localhost:8080';
+
 //Status
 const int statusOK            = 100;
 const int internalError       = 101;
@@ -15,5 +18,5 @@ const String setCookie = 'set-cookie';
 const String accessToken = 'access_token';
 const String refreshToken = 'refresh_token';
 
-//default value
+//Default value
 const String defaultImage = 'user_default.png';
