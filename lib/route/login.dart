@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:here/commons/animation/right_to_left.dart';
 import 'package:here/commons/animation/scale.dart';
 import 'package:here/commons/function/get_access_token.dart';
 import 'package:here/commons/function/request_api.dart';
@@ -8,6 +9,7 @@ import 'package:here/constant.dart';
 import 'package:here/models.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:here/route/my_home.dart';
+import 'package:here/route/signup.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -228,7 +230,9 @@ class _LoginState extends State<Login> {
                       Container(
                         padding: const EdgeInsets.only(top: 15),
                         child: TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(context, rightToLeft(const SignUp()));
+                          },
                           style: ButtonStyle(
                             overlayColor:
                                 MaterialStateProperty.all(Colors.transparent),
