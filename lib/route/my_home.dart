@@ -136,6 +136,7 @@ class _MyHomeState extends State<MyHome> {
             requestApiForm.url = '$server/signout';
             await requestApi(requestApiForm);
             await signOut(_storage);
+            datePickerDate = DateTime.now();
             if (!mounted) return;
             Navigator.push(context, topToBottom(const Login(main: false)));
           },

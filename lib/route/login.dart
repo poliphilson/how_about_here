@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:here/commons/animation/right_to_left.dart';
 import 'package:here/commons/animation/scale.dart';
 import 'package:here/commons/function/get_access_token.dart';
 import 'package:here/commons/function/request_api.dart';
+import 'package:here/commons/provider/control_here_marker.dart';
 import 'package:here/commons/provider/progress_indicator_status.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
 import 'package:here/constant.dart';
@@ -180,33 +182,27 @@ class _LoginState extends State<Login> {
                                                     ProfileImage user = ProfileImage.fromJson(signInJsonForm.data);
                                                     await _storage.write(key: 'profile_image', value: user.profileImage);
 
-                                                    if (widget.main) {
-                                                      RequsetApiForm getHeresApiForm = RequsetApiForm();
-                                                      final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
-                                                      final String today = dateFormat.format(DateTime.now());
-                                                      AccessToken aToken = await getAccessToken(_storage);
-                                                      getHeresApiForm.method = 'GET';
-                                                      getHeresApiForm.url = '$server/here?date=$today';
-                                                      getHeresApiForm.headers = {
-                                                        "Cookie": aToken.accessToken
-                                                      };
+                                                    RequsetApiForm getHeresApiForm = RequsetApiForm();
+                                                    final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+                                                    final String today = dateFormat.format(DateTime.now());
+                                                    AccessToken aToken = await getAccessToken(_storage);
+                                                    getHeresApiForm.method = 'GET';
+                                                    getHeresApiForm.url = '$server/here?date=$today';
+                                                    getHeresApiForm.headers = {
+                                                      "Cookie": aToken.accessToken
+                                                    };
     
-                                                      HereJsonForm getHeresJsonForm = await requestApi(getHeresApiForm);
-                                                      getHeresJsonForm.data ??= [];
-                                                      List<Map<String, dynamic>> heres;
-                                                      heres = (getHeresJsonForm.data as List)
-                                                              .map((item) => item as Map<String, dynamic>)
-                                                              .toList();
-                                                      progressIndicator.off();
+                                                    HereJsonForm getHeresJsonForm = await requestApi(getHeresApiForm);
+                                                    getHeresJsonForm.data ??= [];
+                                                    List<Map<String, dynamic>> heres;
+                                                    heres = (getHeresJsonForm.data as List)
+                                                            .map((item) => item as Map<String, dynamic>)
+                                                            .toList();
+
+                                                    progressIndicator.off();
     
-                                                      if (!mounted) return;
-                                                      await _goToMyHome(context, heres,);
-                                                    } else {
-                                                      progressIndicator.off();
-    
-                                                      if (!mounted) return;
-                                                      await _goToMyHome(context,);
-                                                    }
+                                                    if (!mounted) return;
+                                                    await _goToMyHome(context, heres);
                                                   } else {
                                                     print("Failed to sign in");
                                                     progressIndicator.off();
@@ -255,6 +251,12 @@ class _LoginState extends State<Login> {
     Navigator.pop(context);
     if (widget.main) {
       Navigator.pushReplacement(context, scale(MyHome(heres: heres!), true));
+    } else {
+      Provider.of<ControlHereMarker>(context, listen: false).clear();
+      for (int i = 0; i < heres!.length; i++) {
+        Here here = Here.fromJson(heres[i]);
+        Provider.of<ControlHereMarker>(context, listen: false).add(here, BitmapDescriptor.hueRed);
+      }
     }
   }
 }
