@@ -265,8 +265,7 @@ class _EditMyInfomationState extends State<EditMyInfomation> {
                                             ),
                                           ),
                                           onTap: () {
-                                            _nameTextEditingController.text =
-                                                name;
+                                            _nameTextEditingController.text = name;
 
                                             setState(() {
                                               nameEdit = true;
