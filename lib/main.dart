@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:here/commons/animation/scale.dart';
 import 'package:here/commons/animation/top_to_bottom.dart';
 import 'package:here/commons/function/get_access_token.dart';
+import 'package:here/commons/provider/calandar_date.dart';
 import 'package:here/commons/provider/control_check_point.dart';
 import 'package:here/commons/provider/control_here_location.dart';
 import 'package:here/commons/provider/control_here_marker.dart';
@@ -28,6 +29,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => ControlHereMarker()),
         ChangeNotifierProvider(create: (_) => ControlCheckPoint()),
         ChangeNotifierProvider(create: (_) => ControlHereLocation()),
+        ChangeNotifierProvider(create: (_) => CalendarDate())
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,
