@@ -17,6 +17,7 @@ import 'package:here/constant.dart';
 import 'package:here/models.dart';
 import 'package:here/route/login.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class DetailHere extends StatefulWidget {
@@ -38,6 +39,7 @@ class _DetailHereState extends State<DetailHere> {
 
   String locality = 'Hmm...';
   String area = ' ';
+  String date = ' ';
   bool private = false;
   bool haveImages = false;
   List<String> images = [];
@@ -76,11 +78,20 @@ class _DetailHereState extends State<DetailHere> {
         locality = getLocality(placemark);
         area = getArea(placemark);
         _contentsTextEditController.text = detailHere.here.contents;
+        date = dateToPrettyDate(detailHere.here.createdAt);
         private = detailHere.here.isPrivated;
         haveImages = detailHere.here.image;
         images.addAll(dynamicToListString(detailHere.images));
       });
     }
+  }
+
+  String dateToPrettyDate(String time) {
+    final String parseDate = time.replaceAll('T', ' ').split('.')[0];
+    final DateTime date = DateTime.parse(parseDate);
+    final DateFormat dateFormat = DateFormat('HH:mm');
+    final String prettyDate = dateFormat.format(date);
+    return prettyDate;
   }
 
   List<String> dynamicToListString(dynamic value) {
@@ -327,6 +338,15 @@ class _DetailHereState extends State<DetailHere> {
                                     });
                                   } : null,
                                 ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.only(left: 10, right: 26),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(date, style: const TextStyle(fontWeight: FontWeight.bold),),
                               ],
                             ),
                           ),

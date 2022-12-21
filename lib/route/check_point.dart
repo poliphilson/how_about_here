@@ -132,9 +132,9 @@ class _CheckPointState extends State<CheckPoint> {
 
                 return ListTile(
                   title: Text(
-                    Provider.of<ControlCheckPoint>(context, listen: false)
-                        .points[index]
-                        .description,
+                    Provider.of<ControlCheckPoint>(context, listen: false).points[index].description.isEmpty 
+                    ? "No description"
+                    : Provider.of<ControlCheckPoint>(context, listen: false).points[index].description,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
@@ -198,6 +198,7 @@ class _CheckPointState extends State<CheckPoint> {
                               onPressed: () async {
                                 double latitude = Provider.of<ControlCheckPoint>(context, listen: false).points[index].location['x'];
                                 double longitude = Provider.of<ControlCheckPoint>(context, listen: false).points[index].location['y'];
+                                String time = Provider.of<ControlCheckPoint>(context, listen: false).points[index].createdAt.split('+')[0].replaceAll('T', ' ');
 
                                 final Placemark placemark = await getAddressFromLocation(latitude, longitude);
 
@@ -207,6 +208,7 @@ class _CheckPointState extends State<CheckPoint> {
                                 Provider.of<ControlHereLocation>(context, listen: false).setLongitude(longitude);
                                 Provider.of<ControlHereLocation>(context, listen: false).setArea(getArea(placemark));
                                 Provider.of<ControlHereLocation>(context, listen: false).setLocality(getLocality(placemark));
+                                Provider.of<ControlHereLocation>(context, listen: false).setTime(time);
 
                                 Navigator.pop(context);
                                 Provider.of<ControlCheckPoint>(context, listen: false).clear();

@@ -21,6 +21,7 @@ import 'package:here/constant.dart';
 import 'package:here/models.dart';
 import 'package:here/route/check_point.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class Write extends StatefulWidget {
@@ -64,6 +65,8 @@ class _WriteState extends State<Write> {
         .setArea(getArea(placemark));
     Provider.of<ControlHereLocation>(context, listen: false)
         .setLocality(getLocality(placemark));
+    Provider.of<ControlHereLocation>(context, listen: false)
+        .setTime(DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()));  
   }
 
   @override
@@ -110,31 +113,19 @@ class _WriteState extends State<Write> {
                               onPressed: () async {
                                 progressIndicator.on();
 
-                                AccessToken aToken =
-                                    await getAccessToken(_storage);
+                                AccessToken aToken = await getAccessToken(_storage);
 
                                 if (!mounted) return;
-                                final SendHereForm sendHereForm =
-                                    SendHereForm();
-                                sendHereForm.contents =
-                                    _contentsTextEditController.text;
+                                final SendHereForm sendHereForm = SendHereForm();
+                                sendHereForm.contents = _contentsTextEditController.text;
                                 sendHereForm.isPrivated = private;
-                                sendHereForm.address =
-                                    Provider.of<ControlHereLocation>(context,
-                                            listen: false)
-                                        .placemark;
-                                sendHereForm.x =
-                                    Provider.of<ControlHereLocation>(context,
-                                            listen: false)
-                                        .latitude;
-                                sendHereForm.y =
-                                    Provider.of<ControlHereLocation>(context,
-                                            listen: false)
-                                        .longitude;
+                                sendHereForm.time = Provider.of<ControlHereLocation>(context, listen: false).time;
+                                sendHereForm.address = Provider.of<ControlHereLocation>(context, listen: false).placemark;
+                                sendHereForm.x = Provider.of<ControlHereLocation>(context, listen: false).latitude;
+                                sendHereForm.y = Provider.of<ControlHereLocation>(context, listen: false).longitude;
                                 sendHereForm.images = images;
 
-                                HereJsonForm hereJsonForm = await sendHere(
-                                    sendHereForm, aToken.accessToken);
+                                HereJsonForm hereJsonForm = await sendHere(sendHereForm, aToken.accessToken);
                                 if (hereJsonForm.hereCode == statusOK) {
                                   Here here = Here.fromJson(hereJsonForm.data);
 

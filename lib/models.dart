@@ -25,6 +25,7 @@ class SendHereForm {
   late double x;
   late double y;
   late List<XFile?> images = [];
+  late String time;
 }
 
 class EditMyInfomationForm {
