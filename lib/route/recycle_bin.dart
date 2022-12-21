@@ -133,10 +133,8 @@ class _RecycleBinState extends State<RecycleBin> with TickerProviderStateMixin{
                   controller: _hereScrollController,
                   itemCount: hereList.length,
                   itemBuilder: (context, index) {
-                    final String parseDate = hereList[index].createdAt.split('.').first;
-                    final DateTime date = DateTime.parse(parseDate);
-                    final DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm');
-                    final String prettyDate = dateFormat.format(date);
+                    final String parseDate = hereList[index].createdAt.replaceAll('T', ' ').split('+')[0];
+                    final String prettyDate = '${parseDate.split(':')[0]}:${parseDate.split(':')[1]}';
 
                     return ListTile(
                       title: Text(hereList[index].contents, maxLines: 1,),
@@ -197,10 +195,8 @@ class _RecycleBinState extends State<RecycleBin> with TickerProviderStateMixin{
                   controller: _pointScrollController,
                   itemCount: pointList.length,
                   itemBuilder: (context, index) {
-                    final String parseDate = pointList[index].createdAt.split('.').first;
-                    final DateTime date = DateTime.parse(parseDate);
-                    final DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm');
-                    final String prettyDate = dateFormat.format(date);
+                    final String parseDate = pointList[index].createdAt.replaceAll('T', ' ').split('+')[0];
+                    final String prettyDate = '${parseDate.split(':')[0]}:${parseDate.split(':')[1]}';
 
                     return ListTile(
                       title: Text(pointList[index].description, maxLines: 1,),

@@ -17,7 +17,6 @@ import 'package:here/constant.dart';
 import 'package:here/models.dart';
 import 'package:here/route/login.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class DetailHere extends StatefulWidget {
@@ -87,10 +86,8 @@ class _DetailHereState extends State<DetailHere> {
   }
 
   String dateToPrettyDate(String time) {
-    final String parseDate = time.replaceAll('T', ' ').split('.')[0];
-    final DateTime date = DateTime.parse(parseDate);
-    final DateFormat dateFormat = DateFormat('HH:mm');
-    final String prettyDate = dateFormat.format(date);
+    final String parseDate = time.split('T')[1].split('+')[0];
+    final String prettyDate = '${parseDate.split(':')[0]}:${parseDate.split(':')[1]}';
     return prettyDate;
   }
 
@@ -342,7 +339,7 @@ class _DetailHereState extends State<DetailHere> {
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.only(left: 10, right: 26),
+                            padding: const EdgeInsets.only(left: 26, right: 26),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [

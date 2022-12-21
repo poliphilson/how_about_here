@@ -15,6 +15,7 @@ import 'package:here/commons/function/get_my_location.dart';
 import 'package:here/commons/function/get_refresh_token.dart';
 import 'package:here/commons/function/request_api.dart';
 import 'package:here/commons/function/sign_out.dart';
+import 'package:here/commons/provider/calandar_date.dart';
 import 'package:here/commons/provider/control_here_location.dart';
 import 'package:here/commons/provider/control_here_marker.dart';
 import 'package:here/commons/widget/custom_progress_indicator.dart';
@@ -235,6 +236,8 @@ class _MyHomeState extends State<MyHome> {
               final RequsetApiForm getHeresApiForm = RequsetApiForm();
               final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
               final String date = dateFormat.format(selectedDate);
+              if (!mounted) return;
+              Provider.of<CalendarDate>(context, listen: false).setDate(date);
               final AccessToken aToken = await getAccessToken(_storage);
 
               getHeresApiForm.method = 'GET';
