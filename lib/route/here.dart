@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:here/commons/animation/scale.dart';
 import 'package:here/commons/animation/top_to_bottom.dart';
 import 'package:here/commons/function/get_access_token.dart';
 import 'package:here/commons/function/get_area.dart';
@@ -16,6 +17,7 @@ import 'package:here/commons/widget/new_route_base.dart';
 import 'package:here/constant.dart';
 import 'package:here/models.dart';
 import 'package:here/route/login.dart';
+import 'package:here/route/zoom_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -381,13 +383,18 @@ class _DetailHereState extends State<DetailHere> {
                                   children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(15),
-                                      child: Image(
-                                        image: CachedNetworkImageProvider(
-                                          '$server/image/${images[index]}',
-                                          headers: {
-                                            "Cookie": snapshot.data!.accessToken
-                                          },
+                                      child: GestureDetector(
+                                        child: Image(
+                                          image: CachedNetworkImageProvider(
+                                            '$server/image/${images[index]}',
+                                            headers: {
+                                              "Cookie": snapshot.data!.accessToken
+                                            },
+                                          ),
                                         ),
+                                        onTap: () {
+                                          Navigator.push(context, scale(ZoomImage(imageUrl: images[index]), true));
+                                        },
                                       ),
                                     ),
                                     edit
