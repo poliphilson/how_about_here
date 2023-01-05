@@ -45,12 +45,12 @@ class _WriteState extends State<Write> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getMyCurrentAddress();
+      _initialize();
     });
     super.initState();
   }
 
-  _getMyCurrentAddress() async {
+  _initialize() async {
     final Position position = await getMyLocation();
     final Placemark placemark =
         await getAddressFromLocation(position.latitude, position.longitude);
@@ -219,7 +219,7 @@ class _WriteState extends State<Write> {
                             color: Colors.blue,
                           ),
                           onPressed: () async {
-                            await _getMyCurrentAddress();
+                            await _initialize();
                           },
                         ),
                       ],
