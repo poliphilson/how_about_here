@@ -198,8 +198,7 @@ class _MyHomeState extends State<MyHome> {
             final GoogleMapController controller = await _googleMapController.future;
             final Position position = await getMyLocation();
 
-            controller.animateCamera(CameraUpdate.newLatLng(
-                LatLng(position.latitude, position.longitude)));
+            controller.animateCamera(CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)));
                 
             if (!mounted) return;
             Provider.of<ControlHereMarker>(context, listen: false).myLocation(position.latitude, position.longitude, BitmapDescriptor.hueViolet);
