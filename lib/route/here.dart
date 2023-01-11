@@ -384,13 +384,16 @@ class _DetailHereState extends State<DetailHere> {
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(15),
                                       child: GestureDetector(
-                                        child: Image(
-                                          image: CachedNetworkImageProvider(
-                                            '$server/image/${images[index]}',
-                                            headers: {
+                                        child: CachedNetworkImage(
+                                          imageUrl: '$server/image/${images[index]}',
+                                          httpHeaders: {
                                               "Cookie": snapshot.data!.accessToken
-                                            },
-                                          ),
+                                          },
+                                          progressIndicatorBuilder: ((context, url, progress) {
+                                            return const Center(
+                                              child: CustomProgressIndicator(),
+                                            );
+                                          }),
                                         ),
                                         onTap: () {
                                           Navigator.push(context, scale(ZoomImage(imageUrl: images[index]), true));
