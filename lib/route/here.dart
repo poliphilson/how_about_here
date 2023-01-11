@@ -390,8 +390,11 @@ class _DetailHereState extends State<DetailHere> {
                                               "Cookie": snapshot.data!.accessToken
                                           },
                                           progressIndicatorBuilder: ((context, url, progress) {
-                                            return const Center(
-                                              child: CustomProgressIndicator(),
+                                            return Container(
+                                              padding: const EdgeInsets.only(top: 10, bottom: 10),
+                                              child: const Center(
+                                                child: CustomProgressIndicator(),
+                                              ),
                                             );
                                           }),
                                         ),
